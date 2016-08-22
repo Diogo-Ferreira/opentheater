@@ -1,4 +1,5 @@
 # Opentheater - An INFINIT8 Project
+
 A web theater powered by webtorrent and node.js
 
 
@@ -7,18 +8,21 @@ OpenTheater is a web applications which allows users to watch content togheter l
 The content is delivered in p2p via webtorrent who uses WebRTC.
 
 # Primary features
+
 * Room creation ( Public or Private, with invite by link)
 * Authentification (Probably via Auth0)
 * Room explorer page, with the possibility to add tags
 * p2p streaming in each room
 
 # Nice to have features
+
 * Live reactions ( Via smileys)
 * Chat in the room
 * Custom poll during diffusion
 * Interactive movies
 
 # Tech we will use with <3
+
 * Auth0 for the authentification
 * Angular.js with Angular Material for the front-end
 * Express.js for the backend
