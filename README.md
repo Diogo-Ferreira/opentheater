@@ -1,4 +1,4 @@
-# opentheater - An INFINIT8 Project
+# Opentheater - An INFINIT8 Project
 A web theater powered by webtorrent and node.js
 
 
