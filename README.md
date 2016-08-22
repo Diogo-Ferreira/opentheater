@@ -17,7 +17,6 @@ The content is delivered in p2p via webtorrent who uses WebRTC.
 * Chat in the room
 * Custom poll during diffusion
 * Interactive movies
-* 
 
 # Tech we will use with <3
 * Auth0 for the authentification
