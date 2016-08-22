@@ -1,0 +1,15 @@
+{
+  "name": "opentheater-tracker",
+  "version": "1.0.0",
+  "description": "WebTorrent simple tracker in NodeJS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "INFINIT8",
+  "license": "ISC",
+  "dependencies": {
+    "bittorrent-tracker": "^8.0.11"
+  }
+}
