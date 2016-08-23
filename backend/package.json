@@ -9,6 +9,7 @@
   "author": "INFINIT8",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "sequelize": "^3.24.1"
   }
 }
