@@ -19,7 +19,7 @@ server.on('listening', function(){
   console.log('listening on ws port: '+ server.ws.address().port)
 })
 
-server.listen(8998, 'localhost', function (){
+server.listen(8998, '0.0.0.0', function (){
   console.log("starting")
 })
 
