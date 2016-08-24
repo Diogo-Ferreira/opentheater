@@ -1,1 +1,28 @@
-<h1>Explore here</h1>
+<h1>List of rooms</h1>
+<p>
+    Here is the full list of rooms where you can watch movies.
+
+    <b>todo</b>
+<ul>
+    <li>Make it look good</li>
+</ul>
+
+</p>
+
+<div ng-repeat="room in rooms">
+    <p>
+        <b><a href="#/watch/{{room.id}}">{{room.name}}</a></b><br>
+        <i>{{room.description}}</i>
+
+    <ul>
+        <li>Is the room private ? {{room.is_private}}</li>
+        <li>What is the torrent magnet link ? {{room.torrent_magnet_link}}</li>
+    </ul>
+    </p>
+
+    <span ng-repeat="tag in room.tags" style="margin-right: 2px; background: black; padding: 5px; color: white; display: inline-block; position: relative;">
+        {{tag.name}}
+    </span>
+
+    <br/>
+</div>
