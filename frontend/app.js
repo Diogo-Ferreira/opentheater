@@ -1,5 +1,5 @@
 // Hello OpenTheater :)
-var opentheater = angular.module("openTheater", ["ngRoute"]);
+var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
 
 
 // Wonderful routes
