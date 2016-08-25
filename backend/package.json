@@ -9,6 +9,8 @@
   "author": "INFINIT8",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0"
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.8"
   }
 }
