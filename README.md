@@ -31,4 +31,6 @@ The content is delivered in p2p via webtorrent who uses WebRTC.
 * WebTorrent & Peer.js
 * MongoDB (Node.js Driver)
 
-https://docs.google.com/document/d/1Q_xJZwGFL2cWZ2C1o_AZB5Z60GlkXdNP1aseweClSEU/edit?usp=sharing
+Cahier des charges : https://docs.google.com/document/d/1Q_xJZwGFL2cWZ2C1o_AZB5Z60GlkXdNP1aseweClSEU/edit?usp=sharing
+Planification : https://docs.google.com/spreadsheets/d/1Cx1BZqruPNQ0zOPpDaUwedaT9-UiP9gc-lNLBL9zMao/edit?usp=sharing
+Spécifications détaillées : https://docs.google.com/document/d/1riStNTRIcFuqUydTapzIMGyUt-isBIQ6s8MTFlvs21g/edit?usp=sharing
