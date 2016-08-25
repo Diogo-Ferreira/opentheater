@@ -7,7 +7,7 @@ A web theater powered by webtorrent and node.js
 
 OpenTheater is a web applications which allows users to watch content togheter like in a real movie theater. Users can react to the movie in real time in a discussion channel or with emojis.
 
-The content is delivered in p2p via webtorrent who uses WebRTC.
+The content is delivered in p2p via webtorrent which uses WebRTC.
 
 # Primary features
 
