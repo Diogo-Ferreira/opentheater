@@ -33,7 +33,6 @@ class OpenPeer extends abstractOpenPeer{
     this.peerAdmin = this.peer.connect(adminId)
 
     this.peer.on('open', function(id){
-      alert('Hodor')
       this.peerid = id
     })
 
@@ -50,7 +49,7 @@ class OpenPeerAdmin extends OpenPeer{
     this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
     this.peer.on('open', function(id){
       this.peerid = id
-      onReady();
+      onReady()
     })
 
     this.clients = {}
@@ -71,18 +70,19 @@ class OpenPeerAdmin extends OpenPeer{
     conn.on('open', function(){
       conn.on('data', function(data){
         if(that.OnMessage)
-          that.OnMessage(data);
-        for(var el in this.clients){
-          this.clients[el].send(data)
-        }
+          that.OnMessage(data)
+        that.sendAll(data,conn.peer)
       })
     })
   }
 
-  sendAll(data){
+  sendAll(data,except){
     for(var el in this.clients){
-      this.sendTo(this.clients[el], data);
+      if(this.clients[el].peer != except){
+        console.log("sent to :")
+        console.log(this.clients[el])
+        this.sendTo(this.clients[el], data);
+      }
     }
   }
-
 }

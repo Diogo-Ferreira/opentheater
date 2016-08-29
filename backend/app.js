@@ -29,8 +29,8 @@ app.post('/create',function(req,res){
     "private" : req.body.private,
     "max_spectators" : req.body.max_spectators,
     "description" : req.body.description
-  },function (result){
-    res.send(result)
+  },function (result,data){
+    res.send(data)
   });
 });
 

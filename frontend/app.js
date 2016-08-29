@@ -18,13 +18,14 @@ opentheater.config(function($routeProvider, $mdIconProvider) {
     })
     .when("/create", {
         templateUrl : "templates/create/index.html",
+        controller: "CreateCtrl"
     })
     .when("/login", {
         templateUrl : "templates/connexion/index.html",
     })
     .when("/signup", {
         templateUrl : "templates/inscription/index.html",
-        controller: "CreateCtrl"
+
     })
     .otherwise({redirectTo: "/"});
     //$mdIconProvider.icon('md-toggle-arrow', 'assets/icons/toggle-arrow.svg', 48);
@@ -738,16 +739,28 @@ opentheater.controller('HomeCtrl',function($scope){
 });
 
 opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
+  $scope.messages = [];
     var openpeer
-    $scope.send = function(){
-      console.log('j\'ai pété')
-      openpeer.sendAll('prout')
-    }
-    
-    $scope.OnMessage = function(data){
-      console.log(data)
+    $scope.sendChatMessage = function(){
+      var msg = {
+        "type" : "chat",
+        "content": $scope.currentMessage,
+        "username": $scope.username
+      }
+      $scope.messages.push(msg)
+      openpeer.sendAll(msg)
     }
 
+    //PeerJS on message callback
+    $scope.OnMessage = function(data){
+      console.log(data)
+      if(data.type == "chat"){
+        $scope.messages.push(data)
+        $scope.$apply()
+      }
+    }
+
+    //Gets room information
     $scope.loadRoom = function(cb){
       $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
         var roomData = angular.fromJson(response.data[0])
@@ -757,45 +770,9 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
         console.log(response)
       })
     }
-    // the room
-
+    // the room TODO : adapt this with loadroom() !
     $scope.room = Room.getRoom($routeParams.id)
-    messages = [
-        {
-            "username": "Bryan",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Dom",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Diogo",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Guillaume",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Bryan",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Dom",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Diogo",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-        {
-            "username": "Guillaume",
-            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
-        },
-    ]
-    $scope.messages = messages;
-    var injector = angular.injector(['ng', 'openTheater'])
+
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
       openpeer.OnMessage = $scope.OnMessage
@@ -808,9 +785,6 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
         openpeer.listen(openpeer.peerAdmin)
       })
     }
-
-
-
 });
 
 opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav, $log){
@@ -828,10 +802,9 @@ opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav
                 $log.debug("close LEFT is done");
             });
     };
-
 });
 
-opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
+opentheater.controller('CreateCtrl',function($window,$rootScope, $scope, $http){
     // Create
     $rootScope.isAdmin = true
     $rootScope.adminInstance = new OpenPeerAdmin(function(){
@@ -845,10 +818,9 @@ opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
         "description" : 'Gros film de boule avec un loup et une grand-mère'
       }}).then(function(response){
         console.log(response)
+        $window.location.href = "#/watch/"+response.data._id;
       })
     })
-
-
 });
 
 /**

@@ -21,7 +21,7 @@
                                         <div class="md-list-item-text">
                                             <h3 align="left">{{message.username}}</h3>
                                             <p>
-                                                {{message.message}}
+                                                {{message.content}}
                                             </p>
                                         </div>
                                     </md-list-item>
@@ -31,7 +31,8 @@
                         <div  class="md-inline-form">
                         <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding style="background:#EEE;">
                             <div>
-                                    <label>Message : </label><input type="text">
+                                    <label>Message : </label><input ng-model="currentMessage" type="text">
+                                    <md-button  class="md-raised" ng-click="sendChatMessage()">Envoyer </md-button>
                             </div>
                         </md-content>
                         </div>
@@ -42,6 +43,3 @@
         </div>
     </div>
 </div>
-
-<button ng-click="send()">Clique moi</button>
-
