@@ -730,7 +730,7 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
 
     $scope.loadRoom = function(cb){
       $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
-        var roomData = angular.fromJson(response)
+        var roomData = angular.fromJson(response.data[0])
         cb(roomData)
       }, function(response){
         //Throw error
@@ -742,11 +742,14 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
     var injector = angular.injector(['ng', 'openTheater'])
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
+      openpeer.onMessage = function(data){
+        console.log(data)
+      }
 
     } else {
       $scope.loadRoom(function(roomData){
         console.log(roomData)
-        openpeer = new OpenPeer(roomData.adminpeer)
+        openpeer = new OpenPeer(roomData.admin)
         $scope.roomData = roomData
 
         openpeer.listen(openpeer.peerAdmin, function(data){
@@ -767,18 +770,19 @@ opentheater.controller('ExploreCtrl',function($scope, Room){
 opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
     // Create
     $rootScope.isAdmin = true
-    $rootScope.adminInstance = new OpenPeerAdmin()
+    $rootScope.adminInstance = new OpenPeerAdmin(function(){
+        $http({method: 'POST', url: '/create', data: {
+        "torren_magnet_link" : 'ioejfosidfjafiowe',
+        "joignable_after_start" : true,
+        "name"  : 'Le petit chaperon rouge',
+        "admin" : $rootScope.adminInstance.peer.peerid,
+        "private" : true,
+        "max_spectators" : 69,
+        "description" : 'Gros film de boule avec un loup et une grand-mère'
+      }}).then(function(response){
+        console.log(response)
+      })
+    })
 
-    $http({method: 'POST', url: '/create', data: {
-    "torren_magnet_link" : 'ioejfosidfjafiowe',
-    "joignable_after_start" : true,
-    "name"  : 'Le petit chaperon rouge',
-    "admin" : $rootScope.adminInstance.peerId,
-    "private" : true,
-    "max_spectators" : 69,
-    "description" : 'Gros film de boule avec un loup et une grand-mère'
-  }}).then(function(response){
-    console.log(response)
-  })
 
 });
