@@ -3,7 +3,7 @@ var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
 
 
 // Wonderful routes
-opentheater.config(function($routeProvider) {
+opentheater.config(function($routeProvider, $mdIconProvider) {
     $routeProvider
     .when("/", {
         templateUrl : "templates/home/index.html"
@@ -21,8 +21,18 @@ opentheater.config(function($routeProvider) {
         controller: "CreateCtrl"
     })
     .otherwise({redirectTo: "/"});
+    //$mdIconProvider.icon('md-toggle-arrow', 'assets/icons/toggle-arrow.svg', 48);
 });
 
+
+/*
+    .config(['$mdIconProvider', function($mdIconProvider) {
+        $mdIconProvider.icon('md-toggle-arrow', 'img/icons/toggle-arrow.svg', 48);
+    }])
+    .controller('AppCtrl', function($scope) {
+        $scope.imagePath = 'img/washedout.png';
+    });
+    */
 
 // Let's create a service for rooms because why not
 opentheater.service('Room', function(){
@@ -34,7 +44,7 @@ opentheater.service('Room', function(){
     // Note for me : https://www.grafikart.fr/formations/angularjs/promesses
 
     // Sorry for that
-    that = this
+    that = this;
 
     // All posts
     that.rooms = [
@@ -708,10 +718,10 @@ opentheater.service('Room', function(){
         // Challenge : do the same with one single line
         angular.forEach(that.rooms, function(value, key){
             if(value.id == id){
-                room = value
+                room = value;
             }
         });
-        return room
+        return room;
     }
 })
 
@@ -738,6 +748,7 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       })
     }
     // the room
+
     $scope.room = Room.getRoom($routeParams.id)
     var injector = angular.injector(['ng', 'openTheater'])
     if($rootScope.isAdmin){
@@ -762,9 +773,26 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
 
 });
 
-opentheater.controller('ExploreCtrl',function($scope, Room){
+opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav, $log){
     // Say hello to all the rooms
-    $scope.rooms = Room.getRooms()
+    $scope.rooms = Room.getRooms();
+    $scope.toggleLeft = buildDelayedToggler('left');
+    $scope.toggleRight = buildToggler('right');
+    $scope.isOpenRight = function(){
+        return $mdSidenav('right').isOpen();
+    };
+
+    // Serach elems
+    $scope.queryName = '';
+
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('left').close()
+            .then(function () {
+                $log.debug("close LEFT is done");
+            });
+    };
+
 });
 
 opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
@@ -786,3 +814,76 @@ opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
 
 
 });
+
+
+
+// For the toggled menus on explore page
+/*opentheater.controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('left').close()
+            .then(function () {
+                $log.debug("close LEFT is done");
+            });
+    };
+});*/
+
+opentheater.controller('RightCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('right').close()
+            .then(function () {
+                $log.debug("close RIGHT is done");
+            });
+    };
+});
+
+
+
+
+/**
+ * Supplies a function that will continue to operate until the
+ * time is up.
+ */
+function debounce(func, wait, context) {
+    var timer;
+    return function debounced() {
+        var context = $scope,
+            args = Array.prototype.slice.call(arguments);
+        $timeout.cancel(timer);
+        timer = $timeout(function() {
+            timer = undefined;
+            func.apply(context, args);
+        }, wait || 10);
+    };
+}
+/**
+ * Build handler to open/close a SideNav; when animation finishes
+ * report completion in console
+ */
+function buildDelayedToggler(navID) {
+    return debounce(function() {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav(navID)
+            .toggle()
+            .then(function () {
+                $log.debug("toggle " + navID + " is done");
+            });
+    }, 200);
+}
+function buildToggler(navID) {
+    return function() {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav(navID)
+            .toggle()
+            .then(function () {
+                $log.debug("toggle " + navID + " is done");
+            });
+    }
+}
+
+
+
+
+
+
