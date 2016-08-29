@@ -6,7 +6,7 @@ var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
 opentheater.config(function($routeProvider) {
     $routeProvider
     .when("/", {
-        templateUrl : "templates/home/index.html"
+        templateUrl : "templates/home/index.html",
     })
     .when("/watch/:id", {
         templateUrl : "templates/watch/index.html",
@@ -17,7 +17,13 @@ opentheater.config(function($routeProvider) {
         controller: "ExploreCtrl"
     })
     .when("/create", {
-        templateUrl : "templates/create/index.html"
+        templateUrl : "templates/create/index.html",
+    })
+    .when("/login", {
+        templateUrl : "templates/connexion/index.html",
+    })
+    .when("/signup", {
+        templateUrl : "templates/inscription/index.html",
     })
     .otherwise({redirectTo: "/"});
 });
@@ -717,6 +723,41 @@ opentheater.controller('HomeCtrl',function($scope){
 opentheater.controller('WatchCtrl',function($scope, Room, $routeParams){
     // the room
     $scope.room = Room.getRoom($routeParams.id)
+    messages = [
+        {
+            "username": "Bryan",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Dom",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Diogo",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Guillaume",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Bryan",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Dom",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Diogo",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Guillaume",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+    ]
+    $scope.messages = messages;
 });
 
 opentheater.controller('ExploreCtrl',function($scope, Room){

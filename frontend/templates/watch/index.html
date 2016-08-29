@@ -1,19 +1,45 @@
-<h1>You are (soon) watching a movie !</h1>
 
-<p>
-    The movie name is <b>{{room.name}}</b>
-</p>
+<div class="site-wrapper-inner">
+    <div >
+        <div class="inner cover black">
+            <h1>You are watching : <b>{{room.name}}</b> !</h1>
+            <br/>
+            <div flex="100">
+                <div layout="row" layout-sm="column">
+                    <div flex-md="66" flex-order-sm="1">
+                        <img src="http://placehold.it/1280x720" style="width: 100%; display: block;"/>
+                    </div>
+                    <div flex-md="33" flex-order-sm="2">
+                        <div layout="column" flex layout-fill ng-cloak>
+                        <md-toolbar>
+                            <div class="md-toolbar-tools">Chat</div>
+                        </md-toolbar>
+                        <md-content style="max-height: 500px;" md-theme="altTheme">
+                            <section>
+                                <md-list layout-padding>
+                                    <md-list-item class="md-3-line" ng-repeat="message in messages">
+                                        <div class="md-list-item-text">
+                                            <h3 align="left">{{message.username}}</h3>
+                                            <p>
+                                                {{message.message}}
+                                            </p>
+                                        </div>
+                                    </md-list-item>
+                                </md-list>
+                            </section>
+                        </md-content>
+                        <div  class="md-inline-form">
+                        <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding style="background:#EEE;">
+                            <div>
 
-<p>
-
-    <i>Oh yeah this is the page where you match the movie for real with your friends.</i>
-
-    <b>todo</b>
-
-<ul>
-    <li>Reactions</li>
-    <li>Simple & Theater modes</li>
-    <li>Implement chat</li>
-    <li>Maybe display the movie that could be fun</li>
-</ul>
-</p>
+                                    <label>Message : </label><input type="text">
+                            </div>
+                        </md-content>
+                        </div>
+                        </div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
