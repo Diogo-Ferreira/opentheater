@@ -3,12 +3,13 @@ var app = express();
 var data = require('./data')
 var url = 'mongodb://localhost:27017/mongo-node-backend';
 var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
+
+var peerAdminId = '20934ujjws'
+
+app.use(bodyParser.json());
 data.init(url);
 
-app.get('/', function (req, res){
-   res.send("Hello world !");
-});
+app.use(express.static('../frontend'))
 
 
 app.get('/explore',function(req,res){
@@ -36,7 +37,10 @@ app.post('/create',function(req,res){
 
 app.get('/watch',function(req,res){
   //Send magnet link and admin peerid
-
+  data.find(data.db, {'id': req.params.roomid}, 'rooms', function(data){
+    console.log(data)
+    res.json(data)
+  })
 });
 
 app.listen(3000, function (){

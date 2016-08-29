@@ -17,7 +17,8 @@ opentheater.config(function($routeProvider, $mdIconProvider) {
         controller: "ExploreCtrl"
     })
     .when("/create", {
-        templateUrl : "templates/create/index.html"
+        templateUrl : "templates/create/index.html",
+        controller: "CreateCtrl"
     })
     .otherwise({redirectTo: "/"});
     //$mdIconProvider.icon('md-toggle-arrow', 'assets/icons/toggle-arrow.svg', 48);
@@ -727,12 +728,46 @@ opentheater.service('Room', function(){
 
 // Amazing controllers
 opentheater.controller('HomeCtrl',function($scope){
-    // Static sexy page by Bryan in templates/home/index.html
+    // Static sexy page by Bryan in templates/home/index.html <3
 });
 
-opentheater.controller('WatchCtrl',function($scope, Room, $routeParams){
+opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
+    var openpeer
+    $scope.send = function(){
+      console.log('j\'ai pété')
+      openpeer.sendAll('prout')
+    }
+
+    $scope.loadRoom = function(cb){
+      $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
+        var roomData = angular.fromJson(response)
+        cb(roomData)
+      }, function(response){
+        //Throw error
+        console.log(response)
+      })
+    }
     // the room
-    $scope.room = Room.getRoom($routeParams.id);
+
+    $scope.room = Room.getRoom($routeParams.id)
+    var injector = angular.injector(['ng', 'openTheater'])
+    if($rootScope.isAdmin){
+      openpeer = $rootScope.adminInstance
+
+    } else {
+      $scope.loadRoom(function(roomData){
+        console.log(roomData)
+        openpeer = new OpenPeer(roomData.adminpeer)
+        $scope.roomData = roomData
+
+        openpeer.listen(openpeer.peerAdmin, function(data){
+          console.log(data)
+        })
+      })
+
+
+    }
+
 });
 
 opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav, $log){
@@ -757,8 +792,23 @@ opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav
 
 });
 
-opentheater.controller('CreateCtrl',function($scope){
+opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
     // Create
+    $rootScope.isAdmin = true
+    $rootScope.adminInstance = new OpenPeerAdmin()
+
+    $http({method: 'POST', url: '/create', data: {
+    "torren_magnet_link" : 'ioejfosidfjafiowe',
+    "joignable_after_start" : true,
+    "name"  : 'Le petit chaperon rouge',
+    "admin" : $rootScope.adminInstance.peerId,
+    "private" : true,
+    "max_spectators" : 69,
+    "description" : 'Gros film de boule avec un loup et une grand-mère'
+  }}).then(function(response){
+    console.log(response)
+  })
+
 });
 
 
