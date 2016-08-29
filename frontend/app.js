@@ -6,7 +6,7 @@ var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
 opentheater.config(function($routeProvider, $mdIconProvider) {
     $routeProvider
     .when("/", {
-        templateUrl : "templates/home/index.html"
+        templateUrl : "templates/home/index.html",
     })
     .when("/watch/:id", {
         templateUrl : "templates/watch/index.html",
@@ -18,6 +18,12 @@ opentheater.config(function($routeProvider, $mdIconProvider) {
     })
     .when("/create", {
         templateUrl : "templates/create/index.html",
+    })
+    .when("/login", {
+        templateUrl : "templates/connexion/index.html",
+    })
+    .when("/signup", {
+        templateUrl : "templates/inscription/index.html",
         controller: "CreateCtrl"
     })
     .otherwise({redirectTo: "/"});
@@ -754,6 +760,41 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
     // the room
 
     $scope.room = Room.getRoom($routeParams.id)
+    messages = [
+        {
+            "username": "Bryan",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Dom",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Diogo",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Guillaume",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Bryan",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Dom",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Diogo",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+        {
+            "username": "Guillaume",
+            "message": "labore laboris sit enim aute enim reprehenderit pariatur cillum sint",
+        },
+    ]
+    $scope.messages = messages;
     var injector = angular.injector(['ng', 'openTheater'])
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
@@ -776,13 +817,9 @@ opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav
     // Say hello to all the rooms
     $scope.rooms = Room.getRooms();
     $scope.toggleLeft = buildDelayedToggler('left');
-    $scope.toggleRight = buildToggler('right');
     $scope.isOpenRight = function(){
         return $mdSidenav('right').isOpen();
     };
-
-    // Serach elems
-    $scope.queryName = '';
 
     $scope.close = function () {
         // Component lookup should always be available since we are not using `ng-if`
@@ -813,32 +850,6 @@ opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
 
 
 });
-
-
-
-// For the toggled menus on explore page
-/*opentheater.controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.close = function () {
-        // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav('left').close()
-            .then(function () {
-                $log.debug("close LEFT is done");
-            });
-    };
-});*/
-
-opentheater.controller('RightCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.close = function () {
-        // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav('right').close()
-            .then(function () {
-                $log.debug("close RIGHT is done");
-            });
-    };
-});
-
-
-
 
 /**
  * Supplies a function that will continue to operate until the
