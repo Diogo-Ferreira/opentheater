@@ -37,7 +37,8 @@ app.post('/create',function(req,res){
 
 app.get('/watch',function(req,res){
   //Send magnet link and admin peerid
-  data.find(data.db, {'id': req.params.roomid}, 'rooms', function(data){
+  console.log(req.query.roomid)
+  data.find(data.db, {'_id': data.ObjectID(req.query.roomid)}, 'rooms', function(data){
     console.log(data)
     res.json(data)
   })
