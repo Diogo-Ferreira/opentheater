@@ -1,17 +1,9 @@
-class OpenPeer {
-  constructor(adminId){
-    //Dom est un bel homme
-    this.adminId = adminId
+class abstractOpenPeer {
+  constructor(){
 
-    this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
-    peer.on('open', function(id){
-      this.peerid = id
-    })
-
-    this.peerAdmin = this.peer.connect(pid)
   }
 
-  function listen(conn, cb){
+  listen(conn, cb){
     conn.on('open', function(){
       conn.on('data', function(data){
         //Do some magic here.
@@ -20,31 +12,49 @@ class OpenPeer {
     })
   }
 
-  function sendAll(data){
+  sendAll(data){
     sendTo(this.peerAdmin, data);
   }
 
-  function sendTo(receiver, data){
+  sendTo(receiver, data){
     receiver.send(data);
   }
 
 }
 
+class OpenPeer extends abstractOpenPeer{
+  constructor(adminId){
+    super()
+    //Dom est un bel homme
+    this.adminId = adminId
+
+    this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
+    this.peer.on('open', function(id){
+      this.peerid = id
+    })
+
+    this.peerAdmin = this.peer.connect(adminId)
+  }
+}
+
 class OpenPeerAdmin extends OpenPeer{
   constructor(){
+    super()
     this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
-    peer.on('open', function(id){
+    this.peer.on('open', function(id){
       this.peerid = id
     })
 
     this.clients = {}
 
-    peer.on('connection', function(conn){
+    this.peer.on('connection', function(conn){
+      console.log('Un lapin s\'est connecté')
       this.clients[conn.id] = conn;
+      listen(this.clients[conn.id])
     })
   }
 
-  function listen(conn){
+  listen(conn){
     conn.on('open', function(){
       conn.on('data', function(data){
         for(var el in this.clients){
@@ -54,7 +64,7 @@ class OpenPeerAdmin extends OpenPeer{
     })
   }
 
-  function sendAll(data){
+  sendAll(data){
     for(var el in this.clients){
       sendTo(this.clients[el], data);
     }
