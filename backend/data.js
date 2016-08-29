@@ -31,3 +31,4 @@ var insert = function(db,collectionName,collectionData,callback){
 module.exports.insert = insert;
 module.exports.find = find;
 module.exports.init = init;
+module.exports.ObjectID = require('mongodb').ObjectID;

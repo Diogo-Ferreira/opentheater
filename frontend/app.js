@@ -3,7 +3,7 @@ var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
 
 
 // Wonderful routes
-opentheater.config(function($routeProvider) {
+opentheater.config(function($routeProvider, $mdIconProvider) {
     $routeProvider
     .when("/", {
         templateUrl : "templates/home/index.html",
@@ -24,16 +24,33 @@ opentheater.config(function($routeProvider) {
     })
     .when("/signup", {
         templateUrl : "templates/inscription/index.html",
+        controller: "CreateCtrl"
     })
     .otherwise({redirectTo: "/"});
+    //$mdIconProvider.icon('md-toggle-arrow', 'assets/icons/toggle-arrow.svg', 48);
 });
 
+
+/*
+    .config(['$mdIconProvider', function($mdIconProvider) {
+        $mdIconProvider.icon('md-toggle-arrow', 'img/icons/toggle-arrow.svg', 48);
+    }])
+    .controller('AppCtrl', function($scope) {
+        $scope.imagePath = 'img/washedout.png';
+    });
+    */
 
 // Let's create a service for rooms because why not
 opentheater.service('Room', function(){
 
+    // Later, get data with ajax request
+    // use $http and $q (for ajax request and promises)
+    // var deferred = $q.defer()
+    // $http.get('url').success(function(data, status){ this.posts = data; deferred.resolve(this.posts); }).error(function(){ deferred.reject("cannot retrieve data"); })
+    // Note for me : https://www.grafikart.fr/formations/angularjs/promesses
+
     // Sorry for that
-    that = this
+    that = this;
 
     // All posts
     that.rooms = [
@@ -707,21 +724,37 @@ opentheater.service('Room', function(){
         // Challenge : do the same with one single line
         angular.forEach(that.rooms, function(value, key){
             if(value.id == id){
-                room = value
+                room = value;
             }
         });
-        return room
+        return room;
     }
 })
 
 
 // Amazing controllers
 opentheater.controller('HomeCtrl',function($scope){
-    // Static sexy page by Bryan in templates/home/index.html
+    // Static sexy page by Bryan in templates/home/index.html <3
 });
 
-opentheater.controller('WatchCtrl',function($scope, Room, $routeParams){
+opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
+    var openpeer
+    $scope.send = function(){
+      console.log('j\'ai pété')
+      openpeer.sendAll('prout')
+    }
+
+    $scope.loadRoom = function(cb){
+      $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
+        var roomData = angular.fromJson(response.data[0])
+        cb(roomData)
+      }, function(response){
+        //Throw error
+        console.log(response)
+      })
+    }
     // the room
+
     $scope.room = Room.getRoom($routeParams.id)
     messages = [
         {
@@ -758,13 +791,140 @@ opentheater.controller('WatchCtrl',function($scope, Room, $routeParams){
         },
     ]
     $scope.messages = messages;
+    var injector = angular.injector(['ng', 'openTheater'])
+    if($rootScope.isAdmin){
+      openpeer = $rootScope.adminInstance
+      openpeer.onMessage = function(data){
+        console.log(data)
+      }
+
+    } else {
+      $scope.loadRoom(function(roomData){
+        console.log(roomData)
+        openpeer = new OpenPeer(roomData.admin)
+        $scope.roomData = roomData
+
+        openpeer.listen(openpeer.peerAdmin, function(data){
+          console.log(data)
+        })
+      })
+
+
+    }
+
 });
 
-opentheater.controller('ExploreCtrl',function($scope, Room){
+opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav, $log){
     // Say hello to all the rooms
-    $scope.rooms = Room.getRooms()
+    $scope.rooms = Room.getRooms();
+    $scope.toggleLeft = buildDelayedToggler('left');
+    $scope.toggleRight = buildToggler('right');
+    $scope.isOpenRight = function(){
+        return $mdSidenav('right').isOpen();
+    };
+
+    // Serach elems
+    $scope.queryName = '';
+
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('left').close()
+            .then(function () {
+                $log.debug("close LEFT is done");
+            });
+    };
+
 });
 
-opentheater.controller('CreateCtrl',function($scope){
+opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
     // Create
+    $rootScope.isAdmin = true
+    $rootScope.adminInstance = new OpenPeerAdmin(function(){
+        $http({method: 'POST', url: '/create', data: {
+        "torren_magnet_link" : 'ioejfosidfjafiowe',
+        "joignable_after_start" : true,
+        "name"  : 'Le petit chaperon rouge',
+        "admin" : $rootScope.adminInstance.peer.peerid,
+        "private" : true,
+        "max_spectators" : 69,
+        "description" : 'Gros film de boule avec un loup et une grand-mère'
+      }}).then(function(response){
+        console.log(response)
+      })
+    })
+
+
 });
+
+
+
+// For the toggled menus on explore page
+/*opentheater.controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('left').close()
+            .then(function () {
+                $log.debug("close LEFT is done");
+            });
+    };
+});*/
+
+opentheater.controller('RightCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+    $scope.close = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('right').close()
+            .then(function () {
+                $log.debug("close RIGHT is done");
+            });
+    };
+});
+
+
+
+
+/**
+ * Supplies a function that will continue to operate until the
+ * time is up.
+ */
+function debounce(func, wait, context) {
+    var timer;
+    return function debounced() {
+        var context = $scope,
+            args = Array.prototype.slice.call(arguments);
+        $timeout.cancel(timer);
+        timer = $timeout(function() {
+            timer = undefined;
+            func.apply(context, args);
+        }, wait || 10);
+    };
+}
+/**
+ * Build handler to open/close a SideNav; when animation finishes
+ * report completion in console
+ */
+function buildDelayedToggler(navID) {
+    return debounce(function() {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav(navID)
+            .toggle()
+            .then(function () {
+                $log.debug("toggle " + navID + " is done");
+            });
+    }, 200);
+}
+function buildToggler(navID) {
+    return function() {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav(navID)
+            .toggle()
+            .then(function () {
+                $log.debug("toggle " + navID + " is done");
+            });
+    }
+}
+
+
+
+
+
+

@@ -1,4 +1,104 @@
 
+.card-link{
+  text-decoration: none;
+}
+
+.tag-chip{
+  margin-right: 5px; background: #CCCCCC; padding: 5px; color: white; display: inline-block; position: relative;
+  color: black;
+  border-radius: 22px;
+  padding: 3px 8px 3px 8px;
+  font-size: 10px;
+  opacity: .7;
+}
+
+body {
+  background: #F1F1F1;
+  font-family: 'Roboto', sans-serif;
+  height: auto;
+  min-height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  Height: 30vh;
+  background: #F1F1F1;
+  overflow: hidden;
+}
+
+.bubble {
+  height: 60px;
+  width: 60px;
+  background-color: #2196F3;
+  top: 15vh;
+  right: 50%;
+  position: absolute;
+  border-radius: 50%;
+  -webkit-transform: scale(60);
+  -webkit-animation: bg-in 4s cubic-bezier(0.2, 0.3, 0, 1);
+  animation: bg-in 4s cubic-bezier(0.2, 0.3, 0, 1);
+}
+
+@-webkit-keyframes bg-in {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+@keyframes bg-in {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+.floating-button {
+  position: fixed;
+  z-index: 100;
+  width: 50px;
+  height: 50px;
+  background: #E91E63;
+  color: #FFF;
+  font-size: 2em;
+  border-radius: 50%;
+  top: 30vh;
+  right: 10%;
+  margin-top: -25px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+  -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+  -webkit-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+  -kthtml-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+}
+
+.floating-button:hover {
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  margin-top: -30px;
+}
+
 html,
 body {
     height: 100%;
