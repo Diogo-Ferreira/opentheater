@@ -26,6 +26,12 @@ opentheater.config(function($routeProvider) {
 // Let's create a service for rooms because why not
 opentheater.service('Room', function(){
 
+    // Later, get data with ajax request
+    // use $http and $q (for ajax request and promises)
+    // var deferred = $q.defer()
+    // $http.get('url').success(function(data, status){ this.posts = data; deferred.resolve(this.posts); }).error(function(){ deferred.reject("cannot retrieve data"); })
+    // Note for me : https://www.grafikart.fr/formations/angularjs/promesses
+
     // Sorry for that
     that = this
 
