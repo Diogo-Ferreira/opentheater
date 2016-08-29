@@ -243,7 +243,7 @@ opentheater.service('Room', function(){
                 },
                 {
                     "name": "eu"
-                },
+                  },
                 {
                     "name": "commodo"
                 }
@@ -737,6 +737,10 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       console.log('j\'ai pété')
       openpeer.sendAll('prout')
     }
+    
+    $scope.OnMessage = function(data){
+      console.log(data)
+    }
 
     $scope.loadRoom = function(cb){
       $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
@@ -753,23 +757,18 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
     var injector = angular.injector(['ng', 'openTheater'])
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
-      openpeer.onMessage = function(data){
-        console.log(data)
-      }
-
+      openpeer.OnMessage = $scope.OnMessage
     } else {
       $scope.loadRoom(function(roomData){
         console.log(roomData)
         openpeer = new OpenPeer(roomData.admin)
         $scope.roomData = roomData
-
-        openpeer.listen(openpeer.peerAdmin, function(data){
-          console.log(data)
-        })
+        openpeer.OnMessage = $scope.OnMessage
+        openpeer.listen(openpeer.peerAdmin)
       })
-
-
     }
+
+
 
 });
 
@@ -881,9 +880,3 @@ function buildToggler(navID) {
             });
     }
 }
-
-
-
-
-
-
