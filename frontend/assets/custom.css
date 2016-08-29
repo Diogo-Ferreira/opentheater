@@ -1,6 +1,23 @@
+.card-link{
+  text-decoration: none;
+}
+
+.tag-chip{
+  margin-right: 5px; background: #CCCCCC; padding: 5px; color: white; display: inline-block; position: relative;
+  color: black;
+  border-radius: 22px;
+  padding: 3px 8px 3px 8px;
+  font-size: 10px;
+  opacity: .7;
+}
+
 body {
   background: #F1F1F1;
   font-family: 'Roboto', sans-serif;
+  height: auto;
+  min-height: 100%;
+  margin: 0px;
+  padding: 0px;
 }
 
 header {
