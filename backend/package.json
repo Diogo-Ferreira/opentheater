@@ -9,7 +9,8 @@
   "author": "INFINIT8",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "sequelize": "^3.24.1"
+    "mongodb": "^2.2.8"
   }
 }
