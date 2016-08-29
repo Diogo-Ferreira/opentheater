@@ -711,12 +711,30 @@ opentheater.service('Room', function(){
 
 // Amazing controllers
 opentheater.controller('HomeCtrl',function($scope){
-    // Static sexy page by Bryan in templates/home/index.html
+    // Static sexy page by Bryan in templates/home/index.html <3
 });
 
 opentheater.controller('WatchCtrl',function($scope, Room, $routeParams){
     // the room
     $scope.room = Room.getRoom($routeParams.id)
+    var injector = angular.injector(['ng', 'opentheater'])
+    if(opentheater.isAdmin){
+      openpeer = injector.get('adminpeer')
+    } else {
+      $scope.loadRoom(function(roomData){
+        openpeer = injector.get('clientpeer')(roomData.adminpeer)
+        $scope.roomData = roomData
+      })
+    }
+    $scope.loadRoom = function(cb){
+      $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
+        var roomData = angular.fromJson(response)
+        cb(roomData)
+      }, function(response){
+        //Throw error
+        console.log(response)
+      })
+    }
 });
 
 opentheater.controller('ExploreCtrl',function($scope, Room){
@@ -726,4 +744,17 @@ opentheater.controller('ExploreCtrl',function($scope, Room){
 
 opentheater.controller('CreateCtrl',function($scope){
     // Create
+
 });
+
+opentheater.factory('adminpeer', function($window, $http){
+  this.isAdmin = true
+  return new OpenPeerAdmin()
+})
+
+opentheater.factory('clientpeer', function($window, $http){
+  this.isAdmin = false
+  return function(peerAdminID){
+    return new OpenPeer(peerAdminID)
+  }
+})
