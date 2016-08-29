@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  opentheater:
+    image: hearc/opentheater
+    build: .
+    links:
+      - mongo
+      - tracker
+    environment:
+      MONGO_HOSTNAME: mongo
+    ports:
+      - 3000:3000
+
+  tracker:
+    image: hearc/tracker
+    build:
+      context: tracker
+    ports:
+      - 8998:8998
+
+  mongo:
+    image: mongo:3.2
+    volumes:
+      - mongo:/data/db
+      - mongoconfig:/data/configdb
+
+volumes:
+  mongo:
+  mongoconfig:
