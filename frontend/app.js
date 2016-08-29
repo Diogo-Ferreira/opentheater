@@ -774,13 +774,9 @@ opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav
     // Say hello to all the rooms
     $scope.rooms = Room.getRooms();
     $scope.toggleLeft = buildDelayedToggler('left');
-    $scope.toggleRight = buildToggler('right');
     $scope.isOpenRight = function(){
         return $mdSidenav('right').isOpen();
     };
-
-    // Serach elems
-    $scope.queryName = '';
 
     $scope.close = function () {
         // Component lookup should always be available since we are not using `ng-if`
@@ -810,32 +806,6 @@ opentheater.controller('CreateCtrl',function($rootScope, $scope, $http){
   })
 
 });
-
-
-
-// For the toggled menus on explore page
-/*opentheater.controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.close = function () {
-        // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav('left').close()
-            .then(function () {
-                $log.debug("close LEFT is done");
-            });
-    };
-});*/
-
-opentheater.controller('RightCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.close = function () {
-        // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav('right').close()
-            .then(function () {
-                $log.debug("close RIGHT is done");
-            });
-    };
-});
-
-
-
 
 /**
  * Supplies a function that will continue to operate until the
