@@ -122,9 +122,18 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
     // the room TODO : adapt this with loadroom() !
     $scope.room = Room.getRoom($routeParams.id)
 
+    var client = new WebTorrent();
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
       openpeer.OnMessage = $scope.OnMessage
+
+      client.add($rootScope.magnet, function(torrent){
+        console.log('Added torrent '+$rootScope.magnet)
+        torrent.files.forEach(function (file){
+          file.renderTo('#vid');
+        })
+      })
+
     } else {
       $scope.loadRoom(function(roomData){
         console.log(roomData)
@@ -132,6 +141,14 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
         $scope.roomData = roomData
         openpeer.OnMessage = $scope.OnMessage
         openpeer.listen(openpeer.peerAdmin)
+
+        client.add(roomData.torren_magnet_link, function(torrent){
+          console.log('Added torrent '+roomData.torren_magnet_link)
+          torrent.files.forEach(function(file){
+            file.renderTo('#vid')
+          })
+        })
+
       })
     }
 });
@@ -157,20 +174,32 @@ opentheater.controller('ExploreCtrl',function($scope, Room, MovieAPI, $timeout, 
 opentheater.controller('CreateCtrl',function($window,$rootScope, $scope, $http){
     // Create
     $rootScope.isAdmin = true
-    $rootScope.adminInstance = new OpenPeerAdmin(function(){
-        $http({method: 'POST', url: '/create', data: {
-        "torren_magnet_link" : 'ioejfosidfjafiowe',
-        "joignable_after_start" : true,
-        "name"  : 'Le petit chaperon rouge',
-        "admin" : $rootScope.adminInstance.peer.peerid,
-        "private" : true,
-        "max_spectators" : 69,
-        "description" : 'Gros film de boule avec un loup et une grand-mère'
-      }}).then(function(response){
-        console.log(response)
-        $window.location.href = "#/watch/"+response.data._id;
-      })
-    })
+
+    $scope.fileNameChanged = function (ele) {
+      console.log(ele.files[0]);
+      var client = new WebTorrent();
+      client.seed(ele.files[0], {announceList: [["ws://157.26.106.7:8998"]]}, function(torrent){
+        tor = torrent;
+        console.log("Client is seeding " + torrent.magnetURI);
+        $rootScope.adminInstance = new OpenPeerAdmin(function(){
+            $http({method: 'POST', url: '/create', data: {
+            "torren_magnet_link" : torrent.magnetURI,
+            "joignable_after_start" : true,
+            "name"  : 'Le petit chaperon rouge',
+            "admin" : $rootScope.adminInstance.peer.peerid,
+            "private" : true,
+            "max_spectators" : 69,
+            "description" : 'Gros film de boule avec un loup et une grand-mère'
+          }}).then(function(response){
+            console.log(response)
+            $rootScope.magnet = torrent.magnetURI
+            $window.location.href = "#/watch/"+response.data._id;
+          })
+        })
+      });
+    }
+
+
 });
 
 /**
