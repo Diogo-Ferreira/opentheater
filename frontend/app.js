@@ -88,8 +88,31 @@ opentheater.controller('HomeCtrl', function ($scope) {
 
 
 opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams, $rootScope) {
-    $scope.messages = [];
+
+    $scope.messages = []
+
+    $scope.showPlay = true
+
     var openpeer
+
+    $scope.onPlayBtnClicked = function () {
+        openpeer.sendAll({
+            "type": "cmd",
+            "cmd": "play"
+        })
+        document.getElementById("vid").play()
+        $scope.showPlay = !$scope.showPlay
+    }
+
+    $scope.onPauseBtnClicked = function () {
+        openpeer.sendAll({
+            "type": "cmd",
+            "cmd": "pause"
+        })
+        document.getElementById("vid").pause()
+        $scope.showPlay = !$scope.showPlay
+    }
+
     $scope.sendChatMessage = function () {
         var msg = {
             "type": "chat",
@@ -106,23 +129,38 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
         if (data.type == "chat") {
             $scope.messages.push(data)
             $scope.$apply()
+        } else if (data.type == "cmd") {
+            if (data.cmd == "play") {
+                document.getElementById("vid").play()
+                /*setTimeout(function(){
+                 document.getElementById("vid").play()
+                 }, new Date(data.at - Date.now()).getMilliseconds())*/
+            } else if (data.cmd == "pause") {
+                document.getElementById("vid").pause()
+            }
         }
     }
 
-    //Gets room information
-    $scope.loadRoom = function (cb) {
-        $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function (response) {
-            var roomData = angular.fromJson(response.data[0])
-            cb(roomData)
-        }, function (response) {
-            //Throw error
-            console.log(response)
+    $scope.loadRoom = function (roomData) {
+        console.log(roomData)
+        openpeer = new OpenPeer(roomData.admin)
+        $scope.roomData = roomData
+        openpeer.OnMessage = $scope.OnMessage
+        openpeer.listen(openpeer.peerAdmin)
+
+        client.add(roomData.torren_magnet_link, function (torrent) {
+            console.log('Added torrent ' + roomData.torren_magnet_link)
+            torrent.files.forEach(function (file) {
+                file.renderTo('#vid')
+            })
         })
-    }
+    };
+
     // the room TODO : adapt this with loadroom() !
     $scope.room = Room.getRoom($routeParams.id)
 
     var client = new WebTorrent();
+
     if ($rootScope.isAdmin) {
         openpeer = $rootScope.adminInstance
         openpeer.OnMessage = $scope.OnMessage
@@ -130,25 +168,32 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
         client.add($rootScope.magnet, function (torrent) {
             console.log('Added torrent ' + $rootScope.magnet)
             torrent.files.forEach(function (file) {
-                file.renderTo('#vid');
+                file.renderTo('#vid', {
+                    autoplay: false
+                }, function (err, elem) {
+                    console.log(err)
+                    console.log(elem)
+                });
             })
         })
-
     } else {
-        $scope.loadRoom(function (roomData) {
-            console.log(roomData)
-            openpeer = new OpenPeer(roomData.admin)
-            $scope.roomData = roomData
-            openpeer.OnMessage = $scope.OnMessage
-            openpeer.listen(openpeer.peerAdmin)
-
-            client.add(roomData.torren_magnet_link, function (torrent) {
-                console.log('Added torrent ' + roomData.torren_magnet_link)
-                torrent.files.forEach(function (file) {
-                    file.renderTo('#vid')
+        client.add(roomData.torren_magnet_link, function (torrent) {
+            console.log('Added torrent ' + roomData.torren_magnet_link)
+            torrent.files.forEach(function (file) {
+                file.renderTo('#vid', {
+                    autoplay: false,
+                    controls: false,
+                }, function (err, elem) {
+                    console.log(err);
+                    console.log(elem);
                 })
             })
-
+            torrent.on('download', function (bytes) {
+                console.log('just downloaded: ' + bytes)
+                console.log('total downloaded: ' + torrent.downloaded);
+                console.log('download speed: ' + torrent.downloadSpeed)
+                console.log('progress: ' + torrent.progress)
+            })
         })
     }
 });
@@ -177,7 +222,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
 
     $scope.file = {}
 
-    $scope.uploadFile = function(upFile){
+    $scope.uploadFile = function (upFile) {
         $scope.file = upFile
         console.log($scope.file.files[0])
     }
@@ -236,6 +281,7 @@ function debounce(func, wait, context) {
         }, wait || 10);
     };
 }
+
 /**
  * Build handler to open/close a SideNav; when animation finishes
  * report completion in console
@@ -250,6 +296,7 @@ function buildDelayedToggler(navID) {
             });
     }, 200);
 }
+
 function buildToggler(navID) {
     return function () {
         // Component lookup should always be available since we are not using `ng-if`

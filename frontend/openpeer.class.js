@@ -30,7 +30,9 @@ class OpenPeer extends abstractOpenPeer{
     this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
 
 
-    this.peerAdmin = this.peer.connect(adminId)
+    this.peerAdmin = this.peer.connect(adminId,{
+      reliable: true
+    })
 
     this.peer.on('open', function(id){
       this.peerid = id
