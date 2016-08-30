@@ -35,7 +35,7 @@ opentheater.config(function($routeProvider, $mdIconProvider) {
 opentheater.service('Room', function($http){
 
     // Sorry for that
-    that = this;
+    that = this
 
     // All posts
     that.rooms = {}
@@ -57,6 +57,19 @@ opentheater.service('Room', function($http){
         });
         return room;
     }
+})
+
+opentheater.service('MovieAPI', function($http){
+
+    that = this
+
+    /*
+    that.fetchMovieInfos = function(){
+        return $http.get('http://image.tmdb.org/t/p/')
+    }
+    */
+
+
 })
 
 
