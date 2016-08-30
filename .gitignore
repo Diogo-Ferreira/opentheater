@@ -37,7 +37,7 @@ jspm_packages
 .node_repl_history
 
 # Api key securisation
-./frontend/apikey.js
+/frontend/apikey.js
 
 # ciao .idea
 .idea
