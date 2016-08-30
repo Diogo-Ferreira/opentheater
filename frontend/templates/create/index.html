@@ -1,16 +1,16 @@
 <div layout="column" layout-align="center center" layout-fill="layout-fill">
-    <div layout="column" class="loginBox md-whiteframe-z1" style="width:400px;">
+    <div layout="column" class="loginBox md-whiteframe-z1" style="width:400px;" id="form">
         <md-toolbar>
             <h2 class="md-toolbar-tools">Création d'une salle</h2>
         </md-toolbar>
         <md-content layout="row" class="md-padding">
-            <div>
+            <form ng-submit="createRoomAlpha(this)" enctype="multipart/form-data">
                 <md-input-container>
-                    <label>Nom de la salle</label>
+                    <label>Room name</label>
                     <input ng-model="room.name">
                 </md-input-container>
                 <md-input-container>
-                    <label>Nom du film</label>
+                    <label>Attached existing movie</label>
                     <input ng-model="movie.name">
                 </md-input-container>
                 <md-input-container>
@@ -20,21 +20,30 @@
 
                 <md-input-container>
                     <label>Nombre de personnes max</label>
-                    <input required type="number" step="any" name="rate" ng-model="project.rate" min="1"
-                           max="100" value="1" />
+                    <input type="number" step="any" ng-model="room.nbmax" min="1"
+                           max="100" value="1"/>
                 </md-input-container>
                 <br/>
-                <md-checkbox ng-model="data.cb1" aria-label="Checkbox 1">
+                <md-checkbox ng-model="room.private" aria-label="Checkbox 1">
                     Privé ?
                 </md-checkbox>
                 <br/>
 
-                <input type="file" onchange="angular.element(this).scope().fileNameChanged(this)" />
+                <md-input-container>
+                    <label>File to stream</label>
+                    <input type="file" onchange="angular.element(this).scope().uploadFile(this)"/>
+                </md-input-container>
+
                 <br/>
                 <div layout="row" layout-align="center center" style="padding-top:20px;">
-                    <md-button class="md-raised md-primary">Créer la salle</md-button>
+                    <input type="submit" class="md-raised md-primary" value="Create the room">
                 </div>
-            </div>
+            </form>
         </md-content>
     </div>
+
+    <div layout="row" id="loading" layout-sm="column" layout-align="space-around" style="display:none;">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+
 </div>
