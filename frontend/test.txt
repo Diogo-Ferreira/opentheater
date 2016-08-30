@@ -32,12 +32,12 @@ opentheater.config(function($routeProvider, $mdIconProvider) {
 
 
 // Let's create a service for rooms because why not
-opentheater.service('Room', function($http){
+opentheater.service('Room', function($http, $routeParams){
 
     // Sorry for that
-    that = this
+    that = this;
 
-    // All posts
+    // This will get all posts
     that.rooms = {}
     that.getRooms = function() {
         return $http.get('./assets/json/rooms.json').success(function (data) {
@@ -47,41 +47,69 @@ opentheater.service('Room', function($http){
             console.log("Cannot retrieve data")
         });
     }
-    that.getRoom = function(id){
-        var room = {};
-        // Challenge : do the same with one single line
-        angular.forEach(that.rooms, function(value, key){
-            if(value.id == id){
-                room = value;
-            }
-        });
-        return room;
+
+    // This will get the needed room by id
+    that.loadRoom = function(){
+        return $http.get('/watch', {params: {roomid: $routeParams.id}}).then(function(response){
+            // Success
+            var roomData = angular.fromJson(response.data[0])
+            return roomData
+        }, function(response){
+            // Error
+            console.log(response)
+        })
     }
 })
 
-opentheater.service('MovieAPI', function($http){
+/*
+opentheater.service('Messages', function($scope){
 
     that = this
+    that.messages = []
 
-    /*
-    that.fetchMovieInfos = function(){
-        return $http.get('http://image.tmdb.org/t/p/')
+    var openpeer
+
+    that.sendChatMessage = function(){
+        var msg = {"type" : "chat", "content": $scope.currentMessage, "username": $scope.username}
+        that.messages.push(msg)
+        openpeer.sendAll(msg)
     }
-    */
 
+    that.OnMessage = function(data){
+        if(data.type == "chat"){
+            that.messages.push(data)
+        }
+    }
+
+    that.getMessages = function(){
+        return that.messages
+    }
 
 })
-
+*/
 
 // Amazing controllers
 opentheater.controller('HomeCtrl',function($scope){
     // Static sexy page by Bryan in templates/home/index.html <3
 });
 
-opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
-  $scope.messages = [];
+opentheater.controller('WatchCtrl',function(Room, Messages, $scope, $rootScope){
+
+    $scope.messages = [];
     var openpeer
-    $scope.sendChatMessage = function(){
+
+    /*
+    $scope.updateChat =  Messages.sendChatMessage().then(function(){
+        Messages.getMessages().then(function(messages){
+            $scope.messages = messages
+            openpeer.sendAll($scope.messages.length - 1)
+        })
+    })
+    */
+
+
+
+   $scope.sendChatMessage = function(){
       var msg = {
         "type" : "chat",
         "content": $scope.currentMessage,
@@ -91,56 +119,31 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       openpeer.sendAll(msg)
     }
 
-    //PeerJS on message callback
     $scope.OnMessage = function(data){
       console.log(data)
       if(data.type == "chat"){
         $scope.messages.push(data)
-        $scope.$apply()
+        $scope.$apply() // Update values in view
       }
     }
 
-    //Gets room information
-    $scope.loadRoom = function(cb){
-      $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
-        var roomData = angular.fromJson(response.data[0])
-        cb(roomData)
-      }, function(response){
-        //Throw error
-        console.log(response)
-      })
-    }
-    // the room TODO : adapt this with loadroom() !
-    $scope.room = Room.getRoom($routeParams.id)
+    Room.loadRoom().then(function(data){
+        $scope.roomData = data
+        console.log("The loaded room is : " + data)
+    })
 
-    var client = new WebTorrent();
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
       openpeer.OnMessage = $scope.OnMessage
-
-      client.add($rootScope.magnet, function(torrent){
-        console.log('Added torrent '+$rootScope.magnet)
-        torrent.files.forEach(function (file){
-          file.renderTo('#vid');
-        })
-      })
-
     } else {
-      $scope.loadRoom(function(roomData){
+        Room.loadRoom().then(function(data){
+            $scope.roomData = data
+            console.log("The loaded room is : " + data)
+        })
         console.log(roomData)
         openpeer = new OpenPeer(roomData.admin)
-        $scope.roomData = roomData
         openpeer.OnMessage = $scope.OnMessage
         openpeer.listen(openpeer.peerAdmin)
-
-        client.add(roomData.torren_magnet_link, function(torrent){
-          console.log('Added torrent '+roomData.torren_magnet_link)
-          torrent.files.forEach(function(file){
-            file.renderTo('#vid')
-          })
-        })
-
-      })
     }
 });
 
@@ -166,32 +169,20 @@ opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav
 opentheater.controller('CreateCtrl',function($window,$rootScope, $scope, $http){
     // Create
     $rootScope.isAdmin = true
-
-    $scope.fileNameChanged = function (ele) {
-      console.log(ele.files[0]);
-      var client = new WebTorrent();
-      client.seed(ele.files[0], {announceList: [["ws://157.26.106.7:8998"]]}, function(torrent){
-        tor = torrent;
-        console.log("Client is seeding " + torrent.magnetURI);
-        $rootScope.adminInstance = new OpenPeerAdmin(function(){
-            $http({method: 'POST', url: '/create', data: {
-            "torren_magnet_link" : torrent.magnetURI,
-            "joignable_after_start" : true,
-            "name"  : 'Le petit chaperon rouge',
-            "admin" : $rootScope.adminInstance.peer.peerid,
-            "private" : true,
-            "max_spectators" : 69,
-            "description" : 'Gros film de boule avec un loup et une grand-mère'
-          }}).then(function(response){
-            console.log(response)
-            $rootScope.magnet = torrent.magnetURI
-            $window.location.href = "#/watch/"+response.data._id;
-          })
-        })
-      });
-    }
-
-
+    $rootScope.adminInstance = new OpenPeerAdmin(function(){
+        $http({method: 'POST', url: '/create', data: {
+        "torren_magnet_link" : 'ioejfosidfjafiowe',
+        "joignable_after_start" : true,
+        "name"  : 'Le petit chaperon rouge',
+        "admin" : $rootScope.adminInstance.peer.peerid,
+        "private" : true,
+        "max_spectators" : 69,
+        "description" : 'Gros film de boule avec un loup et une grand-mère'
+      }}).then(function(response){
+        console.log(response)
+        $window.location.href = "#/watch/"+response.data._id;
+      })
+    })
 });
 
 /**

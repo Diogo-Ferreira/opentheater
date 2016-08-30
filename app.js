@@ -1,7 +1,9 @@
 var express = require('express');
 var app = express();
-var data = require('./data')
-var url = 'mongodb://localhost:27017/mongo-node-backend';
+var data = require('./backend/data')
+
+var mongoHostname = process.env['MONGO_HOSTNAME'] || 'localhost'
+var url = 'mongodb://'+ mongoHostname +':27017/mongo-node-backend';
 var bodyParser = require("body-parser");
 
 var peerAdminId = '20934ujjws'
@@ -9,7 +11,7 @@ var peerAdminId = '20934ujjws'
 app.use(bodyParser.json());
 data.init(url);
 
-app.use(express.static('../frontend'))
+app.use(express.static('./frontend'))
 
 
 app.get('/explore',function(req,res){
@@ -44,6 +46,6 @@ app.get('/watch',function(req,res){
   })
 });
 
-app.listen(3000, function (){
+app.listen(3000, '0.0.0.0', function (){
    console.log("Magic is happening on port 3000 !");
 });

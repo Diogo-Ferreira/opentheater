@@ -2,7 +2,7 @@
 <div class="site-wrapper-inner">
     <div >
         <div class="inner cover black">
-            <h1>You are watching : <b>{{room.name}}</b> !</h1>
+            <h1 style="text-transform: uppercase;"><b>{{room.name}}</b></h1>
             <br/>
             <div flex="100">
                 <div layout="row" layout-sm="column">
@@ -10,12 +10,31 @@
                         <video width="1280" height="720" id="vid" controls autoplay poster="https://i.ytimg.com/vi/yTrgEOIoc-M/maxresdefault.jpg" />
                         <!--<img src="http://placehold.it/1280x720" style="width: 100%; display: block;"/>-->
                     </div>
-                    <div flex-md="33" flex-order-sm="2">
+
+                </div>
+                <div layout="row" layout-md="column" layout-sm="column">
+                    <div flex-md="66" flex-order-md="1">
+                        <video src="assets/img/MVI_0766.MP4"  controls="controls" autobuffer style="width:100%;max-width:1280px;height:100%;max-height:720px;">
+                        </video>
+                        <div layout="column">
+                            <md-chips>
+                                <md-chip>Bryan Muhmenthaler</md-chip>
+                                <md-chip>in 30 minutes</md-chip>
+                                <md-chip>{{room.is_private ? "Private" : "Public"}}</md-chip>
+                            </md-chips>
+                            <div layout="row" style="margin-top: 10px;">
+                                <span ng-repeat="tag in room.tags" class="tag-chip">{{tag.name}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div flex-md="33" flex-order-md="2">
                         <div layout="column" flex layout-fill ng-cloak>
                         <md-toolbar>
-                            <div class="md-toolbar-tools">Chat</div>
+                            <div class="md-toolbar-tools">
+                                Chat <div style="width:100%;"><md-button class="md-warn" style="float:right;">Mode Nuit</md-button></div>
+                            </div>
                         </md-toolbar>
-                        <md-content style="max-height: 500px;" md-theme="altTheme">
+                        <md-content style="height: 576px;" md-theme="altTheme">
                             <section>
                                 <md-list layout-padding>
                                     <md-list-item class="md-3-line" ng-repeat="message in messages">
@@ -30,14 +49,15 @@
                             </section>
                         </md-content>
                         <div  class="md-inline-form">
-                        <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding style="background:#EEE;">
+                        <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding style="background:#BBB;">
                             <div>
                                     <label>Message : </label><input ng-model="currentMessage" type="text">
                                     <md-button  class="md-raised" ng-click="sendChatMessage()">Envoyer </md-button>
                             </div>
                         </md-content>
                         </div>
-                        </div></div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
