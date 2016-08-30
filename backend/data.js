@@ -24,7 +24,7 @@ var insert = function(db,collectionName,collectionData,callback){
   var collection = db.collection(collectionName);
   collection.insertOne(collectionData, function(err, result) {
     assert.equal(err, null);
-    callback(result);
+    callback(result,collectionData);
   });
 }
 
