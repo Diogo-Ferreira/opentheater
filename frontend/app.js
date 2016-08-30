@@ -95,6 +95,10 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
 
     var openpeer
 
+    var started = false
+
+    var timeToSart = 0
+
     $scope.onPlayBtnClicked = function(){
       openpeer.sendAll({
         "type" : "cmd",
@@ -102,6 +106,7 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       })
       document.getElementById("vid").play()
       $scope.showPlay = !$scope.showPlay
+      started = true
     }
 
     $scope.onPauseBtnClicked = function(){
@@ -137,6 +142,10 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
           }, new Date(data.at - Date.now()).getMilliseconds())*/
         }else if(data.cmd == "pause"){
           document.getElementById("vid").pause()
+        }else if(data.cmd == "goto"){
+          console.log("GOTO RECEIVED")
+          started = true
+          timeToSart = data.to
         }
       }
     }
@@ -168,6 +177,17 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
             console.log(err)
             console.log(elem)
           });
+
+          openpeer.OnNewPeer = function(conn){
+            console.log("New Peer Connected !")
+            if(started){
+              openpeer.sendTo(conn,{
+                "type" : "cmd",
+                "cmd"  : "goto",
+                "to"   : document.getElementById("vid").currentTime
+              })
+            }
+          }
         })
       })
 
@@ -177,7 +197,6 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
         openpeer = new OpenPeer(roomData.admin)
         $scope.roomData = roomData
         openpeer.OnMessage = $scope.OnMessage
-        openpeer.listen(openpeer.peerAdmin)
 
         client.add(roomData.torren_magnet_link, function(torrent){
           console.log('Added torrent '+ roomData.torren_magnet_link)
@@ -188,13 +207,13 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
             },function(err,elem){
               console.log(err);
               console.log(elem);
+              if(started){
+                document.getElementById("vid").currentTime = timeToSart
+                document.getElementById("vid").play()
+              }
             })
           })
           torrent.on('download', function (bytes) {
-            console.log('just downloaded: ' + bytes)
-            console.log('total downloaded: ' + torrent.downloaded);
-            console.log('download speed: ' + torrent.downloadSpeed)
-            console.log('progress: ' + torrent.progress)
           })
         })
 

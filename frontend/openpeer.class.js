@@ -34,6 +34,8 @@ class OpenPeer extends abstractOpenPeer{
       reliable: true
     })
 
+    this.listen(this.peerAdmin)
+
     this.peer.on('open', function(id){
       this.peerid = id
     })
@@ -60,6 +62,10 @@ class OpenPeerAdmin extends OpenPeer{
       console.log('Un lapin s\'est connecté')
       that.clients[conn.id] = conn;
       that.listen(that.clients[conn.id])
+
+      if(that.OnNewPeer)
+        that.OnNewPeer(conn)
+
     })
     this.peer.on('error', function(err){
       console.log(err)
