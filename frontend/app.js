@@ -79,8 +79,31 @@ opentheater.controller('HomeCtrl',function($scope){
 });
 
 opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
-  $scope.messages = [];
+
+    $scope.messages = []
+
+    $scope.showPlay = true
+
     var openpeer
+
+    $scope.onPlayBtnClicked = function(){
+      openpeer.sendAll({
+        "type" : "cmd",
+        "cmd"  : "play"
+      })
+      document.getElementById("vid").play()
+      $scope.showPlay = !$scope.showPlay
+    }
+
+    $scope.onPauseBtnClicked = function(){
+      openpeer.sendAll({
+        "type" : "cmd",
+        "cmd"  : "pause"
+      })
+      document.getElementById("vid").pause()
+      $scope.showPlay = !$scope.showPlay
+    }
+
     $scope.sendChatMessage = function(){
       var msg = {
         "type" : "chat",
@@ -97,6 +120,15 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       if(data.type == "chat"){
         $scope.messages.push(data)
         $scope.$apply()
+      }else if(data.type == "cmd"){
+        if(data.cmd == "play"){
+          document.getElementById("vid").play()
+          /*setTimeout(function(){
+            document.getElementById("vid").play()
+          }, new Date(data.at - Date.now()).getMilliseconds())*/
+        }else if(data.cmd == "pause"){
+          document.getElementById("vid").pause()
+        }
       }
     }
 
@@ -121,7 +153,12 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
       client.add($rootScope.magnet, function(torrent){
         console.log('Added torrent '+$rootScope.magnet)
         torrent.files.forEach(function (file){
-          file.renderTo('#vid');
+          file.renderTo('#vid',{
+            autoplay : false
+          },function(err,elem){
+            console.log(err)
+            console.log(elem)
+          });
         })
       })
 
@@ -134,9 +171,21 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
         openpeer.listen(openpeer.peerAdmin)
 
         client.add(roomData.torren_magnet_link, function(torrent){
-          console.log('Added torrent '+roomData.torren_magnet_link)
+          console.log('Added torrent '+ roomData.torren_magnet_link)
           torrent.files.forEach(function(file){
-            file.renderTo('#vid')
+            file.renderTo('#vid',{
+              autoplay : false,
+              controls : false,
+            },function(err,elem){
+              console.log(err);
+              console.log(elem);
+            })
+          })
+          torrent.on('download', function (bytes) {
+            console.log('just downloaded: ' + bytes)
+            console.log('total downloaded: ' + torrent.downloaded);
+            console.log('download speed: ' + torrent.downloadSpeed)
+            console.log('progress: ' + torrent.progress)
           })
         })
 
