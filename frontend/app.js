@@ -181,6 +181,7 @@ opentheater.controller('CreateCtrl',function($window,$rootScope, $scope, $http){
             "admin" : $rootScope.adminInstance.peer.peerid,
             "private" : true,
             "max_spectators" : 69,
+            "id_movie" : 492952958,
             "description" : 'Gros film de boule avec un loup et une grand-mère'
           }}).then(function(response){
             console.log(response)
