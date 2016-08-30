@@ -193,8 +193,13 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
       })
 
     } else {
-        client.add(roomData.torren_magnet_link, function(torrent){
-          console.log('Added torrent '+ roomData.torren_magnet_link)
+       $scope.loadRoom(function(roomData){
+         openpeer = new OpenPeer(roomData.admin)
+         $scope.roomData = roomData
+         openpeer.OnMessage = $scope.OnMessage
+         openpeer.listen(openpeer.peerAdmin)
+        client.add(roomData.torrent_magnet_link, function(torrent){
+          console.log('Added torrent '+ roomData.torrent_magnet_link)
           torrent.files.forEach(function(file){
             file.renderTo('#vid',{
               autoplay : false,
@@ -211,6 +216,7 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
           torrent.on('download', function (bytes) {
           })
         })
+      })
     };
 
     // the room TODO : adapt this with loadroom() !
@@ -249,21 +255,15 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
     $scope.createRoomAlpha = function (elems) {
 
         // Swag animation 3000 thank you Bryan
-        document.getElementById("form").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-
+        document.getElementById("form").style.display = "none"
+        document.getElementById("loading").style.display = "block"
         var client = new WebTorrent()
         client.seed($scope.file.files[0],
             {
-                announceList: [["ws://157.26.106.7:8998"]]
+                announceList: [["ws://opentheater.infinit8.io:8998"]]
             }, function (torrent) {
-                tor = torrent
                 // console.log("Client is seeding " + torrent.magnetURI)
                 $rootScope.adminInstance = new OpenPeerAdmin(function () {
-
-                    // Here we post
-                    console.log("post")
-                    $rootScope.adminInstance = new OpenPeerAdmin(function () {
                         $http({
                             method: 'POST', url: '/create', data: {
                                 "torrent_magnet_link": torrent.magnetURI,
@@ -278,11 +278,11 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                             $rootScope.magnet = torrent.magnetURI
                             $window.location.href = "#/watch/" + response.data._id
                         })
-                    })
+
                 })
             })
     }
-});
+})
 
 /**
  * Supplies a function that will continue to operate until the

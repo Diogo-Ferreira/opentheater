@@ -24,7 +24,7 @@ app.get('/explore',function(req,res){
 app.post('/create',function(req,res){
   //Still need to add params validation
   data.insert(data.db,'rooms',{
-    "torren_magnet_link" : req.body.torren_magnet_link,
+    "torrent_magnet_link" : req.body.torrent_magnet_link,
     "joignable_after_start" : req.body.joignable_after_start,
     "name"  : req.body.name,
     "admin" : req.body.admin,
