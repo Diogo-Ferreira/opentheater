@@ -38,3 +38,6 @@ jspm_packages
 
 # Api key securisation
 ./frontend/apikey.js
+
+# ciao .idea
+.idea
