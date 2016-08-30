@@ -59,16 +59,24 @@ opentheater.service('Room', function($http){
     }
 })
 
-opentheater.service('MovieAPI', function($http){
+opentheater.service('MovieAPI', function($http, $rootScope){
 
     that = this
 
-    /*
-    that.fetchMovieInfos = function(){
-        return $http.get('http://image.tmdb.org/t/p/')
+    that.searchMovie = function(query){
+        return $http.get("http://api.themoviedb.org/3/search/movie?api_key=" + tmdbKey + "&query=" + query).then(function(response){
+            return angular.fromJson(response.data[0])
+        }, function(response){
+            console.log("Error fetching tmdb data!")
+        })
     }
-    */
 
+    /*
+    Coming soon
+
+    that.findMovie = function(id){
+
+    }*/
 
 })
 
@@ -77,6 +85,7 @@ opentheater.service('MovieAPI', function($http){
 opentheater.controller('HomeCtrl',function($scope){
     // Static sexy page by Bryan in templates/home/index.html <3
 });
+
 
 opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $rootScope){
   $scope.messages = [];
@@ -144,9 +153,8 @@ opentheater.controller('WatchCtrl',function($scope, $http, Room, $routeParams, $
     }
 });
 
-opentheater.controller('ExploreCtrl',function($scope, Room, $timeout, $mdSidenav, $log){
-    // Say hello to all the rooms
-    //$scope.rooms = Room.getRooms();
+
+opentheater.controller('ExploreCtrl',function($scope, Room, MovieAPI, $timeout, $mdSidenav, $log){
 
     Room.getRooms().success(function(data){
         $scope.rooms = data;
