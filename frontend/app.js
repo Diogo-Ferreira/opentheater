@@ -96,7 +96,7 @@ opentheater.controller('HomeCtrl', function ($scope) {
 });
 
 
-opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams, $rootScope){
+opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $routeParams, $rootScope){
 
     $scope.messages = []
     $scope.showPlay = true
