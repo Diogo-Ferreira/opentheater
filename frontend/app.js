@@ -100,6 +100,28 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
     var openpeer
     var started = false
 
+    //For invalidateRoom, since were not sure that routeParams will be avaible on destroy
+    var roomid = $routeParams.id
+
+    $scope.invalidateRoom = function(){
+       $http({
+        method : 'POST',
+        url : '/invalidate',
+        data : {
+          "roomid" : roomid
+        }
+      })
+    }
+
+    $scope.$on('$destroy', function() {
+        $scope.invalidateRoom()
+    });
+
+    window.onbeforeunload = function(){
+      $scope.invalidateRoom()//Not working :(
+      return "are you sure ?"
+    }
+
     $scope.onPlayBtnClicked = function(){
       openpeer.sendAll({
         "type" : "cmd",
@@ -188,6 +210,17 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
         }
       })
 
+      //Pings the room each minute to say we're alive, so don't destroy the room !
+      setInterval(function(){
+        $http({
+         method : 'POST',
+         url : '/ping_room',
+         data : {
+           "roomid" : $routeParams.id
+         }
+       })
+      },10000)
+
     } else {
        $scope.loadRoom(function(roomData){
          openpeer = new OpenPeer(roomData.admin)
@@ -273,7 +306,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
           })
           $scope.punchline = punchline
         }, 4527)
-        //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
+
         $rootScope.client = new WebTorrent()
         $rootScope.client.seed($scope.file.files[0],
             {
@@ -281,7 +314,6 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                 announceList: [["ws://opentheater.infinit8.io:8998"]]
             }, function (torrent) {
                 $rootScope.torrent = torrent
-                // console.log("Client is seeding " + torrent.magnetURI)
                 $rootScope.adminInstance = new OpenPeerAdmin(function () {
                         $http({
                             method: 'POST', url: '/create', data: {
