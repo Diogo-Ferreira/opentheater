@@ -40,8 +40,11 @@ opentheater.service('Room', function ($http) {
     // All posts
     that.rooms = {}
     that.getRooms = function () {
-        return $http.get('./assets/json/rooms.json').success(function (data) {
-            that.rooms = data
+        return $http({
+          method : 'GET',
+          url : '/explore'
+        }).success(function (data) {
+            that.rooms = data.data
             return data
         }).error(function (data) {
             console.log("Cannot retrieve data")
@@ -65,6 +68,7 @@ opentheater.service('MovieAPI', function ($http, $rootScope) {
 
     that = this
 
+    //TODO: maybe it would be better to store the api link in a config file
     that.searchMovie = function (query) {
         return $http.get("http://api.themoviedb.org/3/search/movie?api_key=" + tmdbKey + "&query=" + query).then(function (response) {
             return angular.fromJson(response.data[0])
@@ -89,17 +93,12 @@ opentheater.controller('HomeCtrl', function ($scope) {
 });
 
 
-opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams, $rootScope) {
+opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams, $rootScope){
 
     $scope.messages = []
-
     $scope.showPlay = true
-
     var openpeer
-
     var started = false
-
-    var timeToSart = 0
 
     $scope.onPlayBtnClicked = function(){
       openpeer.sendAll({
@@ -131,7 +130,7 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
     }
 
     //PeerJS on message callback
-    $scope.OnMessage = function(data){
+    $scope.OnMessage = function(data,peer){
       console.log(data)
       if(data.type == "chat"){
         $scope.messages.push(data)
@@ -139,18 +138,24 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
       }else if(data.type == "cmd"){
         if(data.cmd == "play"){
           document.getElementById("vid").play()
-          /*setTimeout(function(){
-            document.getElementById("vid").play()
-          }, new Date(data.at - Date.now()).getMilliseconds())*/
         }else if(data.cmd == "pause"){
           document.getElementById("vid").pause()
         }else if(data.cmd == "goto"){
-          console.log("GOTO RECEIVED")
           started = true
-          timeToSart = data.to
-
+          document.getElementById("vid").currentTime = data.to
+          document.getElementById("vid").play()
         }
-    }}
+      }else if(data.type == "info"){
+        console.log("One peer's ready !")
+        if(data.info == "ready" && started){
+          openpeer.sendTo(peer,{
+            "type" : "cmd",
+            "cmd"  : "goto",
+            "to"   : document.getElementById("vid").currentTime
+          })
+        }
+      }
+  }
 
     //Gets room information
     $scope.loadRoom = function(cb){
@@ -163,56 +168,45 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
       })
     }
 
-    // the room TODO : adapt this with loadroom() !
     $scope.room = Room.getRoom($routeParams.id)
 
-    var client = new WebTorrent();
+    if($rootScope.client == undefined) $rootScope.client = new WebTorrent()
+
+    //TODO: JS's not like java, having a parent class for peeradmin, peer and peerjs encapsulation is maybe not the good way, check angular factories !
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
       openpeer.OnMessage = $scope.OnMessage
-
-      client.add($rootScope.magnet, function(torrent){
-        console.log('Added torrent '+$rootScope.magnet)
-        torrent.files.forEach(function (file){
-          file.renderTo('#vid',{
-            autoplay : false
-          },function(err,elem){
-            console.log(err)
-            console.log(elem)
-          });
-
-          openpeer.OnNewPeer = function(conn){
-            console.log("New Peer Connected !")
-            if(started){
-              openpeer.sendTo(conn,{
-                "type" : "cmd",
-                "cmd"  : "goto",
-                "to"   : document.getElementById("vid").currentTime
-              })
-            }
-          }
-        })
+      $rootScope.torrent.files.forEach(function (file){
+        file.renderTo('#vid',{
+          autoplay : false
+        },function(err,elem){
+          console.log(err)
+          console.log(elem)
+        });
+        openpeer.OnNewPeer = function(conn){
+          console.log("New Peer Connected !")
+        }
       })
 
     } else {
        $scope.loadRoom(function(roomData){
          openpeer = new OpenPeer(roomData.admin)
-         $scope.roomData = roomData
+         $scope.room = roomData
          openpeer.OnMessage = $scope.OnMessage
          openpeer.listen(openpeer.peerAdmin)
-        client.add(roomData.torrent_magnet_link, function(torrent){
+        $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
           console.log('Added torrent '+ roomData.torrent_magnet_link)
           torrent.files.forEach(function(file){
             file.renderTo('#vid',{
-              autoplay : false,
               controls : false,
             },function(err,elem){
               console.log(err);
               console.log(elem);
-              if(started){
-                document.getElementById("vid").currentTime = timeToSart
-                document.getElementById("vid").play()
-              }
+              openpeer.sendTo(openpeer.peerAdmin,{
+                "type" : "info",
+                "info" : "ready"
+              })
+              document.getElementById("vid").pause()
             })
           })
           torrent.on('download', function (bytes) {
@@ -220,9 +214,6 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
         })
       })
     };
-
-    // the room TODO : adapt this with loadroom() !
-    //$scope.room = Room.getRoom($routeParams.id)
 });
 
 
@@ -272,6 +263,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         $scope.punchline = punchline
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
+<<<<<<< HEAD
         setInterval(function(){
           $http.get('./assets/json/punchlines.json').success(function(data){
               console.log(data)
@@ -285,9 +277,16 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
 
         var client = new WebTorrent()
         client.seed($scope.file.files[0],
+=======
+        //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
+        $rootScope.client = new WebTorrent()
+        $rootScope.client.seed($scope.file.files[0],
+>>>>>>> 035aa6818dc8a7c2475199d65b0b05e76e98e5e7
             {
+                //TODO: store de tracker name in the db, in case if the user want's to use his own tracker
                 announceList: [["ws://opentheater.infinit8.io:8998"]]
             }, function (torrent) {
+                $rootScope.torrent = torrent
                 // console.log("Client is seeding " + torrent.magnetURI)
                 $rootScope.adminInstance = new OpenPeerAdmin(function () {
                         $http({
@@ -296,7 +295,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                                 "joinable_after_start": true,
                                 "name": elems.room.name,
                                 "admin": $rootScope.adminInstance.peer.peerid,
-                                "private": true,
+                                "private": false,
                                 "max_spectators": elems.room.nbmax,
                                 "description": elems.movie.description
                             }

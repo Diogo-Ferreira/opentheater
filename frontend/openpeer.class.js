@@ -6,7 +6,7 @@ class abstractOpenPeer {
     conn.on('open', function(){
       conn.on('data', function(data){
         //Do some magic here.
-        if(that.OnMessage)
+        if(that.OnMessage,conn)
           that.OnMessage(data);
       })
     })
@@ -42,7 +42,6 @@ class OpenPeer extends abstractOpenPeer{
 
     this.peer.on('error', function(err){
       console.log(err)
-      console.log('fils de pute')
     })
   }
 }
@@ -78,7 +77,7 @@ class OpenPeerAdmin extends OpenPeer{
     conn.on('open', function(){
       conn.on('data', function(data){
         if(that.OnMessage)
-          that.OnMessage(data)
+          that.OnMessage(data,conn)
         that.sendAll(data,conn.peer)
       })
     })
@@ -87,7 +86,6 @@ class OpenPeerAdmin extends OpenPeer{
   sendAll(data,except){
     for(var el in this.clients){
       if(this.clients[el].peer != except){
-        console.log("sent to :")
         console.log(this.clients[el])
         this.sendTo(this.clients[el], data);
       }

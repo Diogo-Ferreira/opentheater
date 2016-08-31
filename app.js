@@ -15,7 +15,7 @@ app.use(express.static('./frontend'))
 
 
 app.get('/explore',function(req,res){
-  data.find(data.db,{},'rooms',function(rooms){
+  data.find(data.db,{"private" : false},'rooms',function(rooms){
     res.json(rooms);
   });
 });
