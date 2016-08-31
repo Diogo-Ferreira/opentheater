@@ -7,6 +7,7 @@ opentheater.config(function ($routeProvider, $mdIconProvider) {
     $routeProvider
         .when("/", {
             templateUrl: "templates/home/index.html",
+            controller: "HomeCtrl"
         })
         .when("/watch/:id", {
             templateUrl: "templates/watch/index.html",
@@ -90,6 +91,8 @@ opentheater.service('MovieAPI', function ($http, $rootScope) {
 // Amazing controllers
 opentheater.controller('HomeCtrl', function ($scope) {
     // Static sexy page by Bryan in templates/home/index.html <3
+
+    $scope.bgGif = "url('./assets/img/gif/"+Math.floor(Math.random()*47)+".gif') no-repeat"
 });
 
 
