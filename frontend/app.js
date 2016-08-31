@@ -114,11 +114,12 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
     }
 
     $scope.$on('$destroy', function() {
-        $scope.invalidateRoom()
+        if($rootScope.isAdmin) $scope.invalidateRoom()
     });
 
     window.onbeforeunload = function(){
-      $scope.invalidateRoom()//Not working :(
+      if($rootScope.isAdmin) $scope.invalidateRoom()
+       $scope.invalidateRoom()//Not working :(
       return "are you sure ?"
     }
 
