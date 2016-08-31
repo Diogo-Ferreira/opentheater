@@ -120,11 +120,17 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
         if($rootScope.isAdmin) $scope.invalidateRoom()
     });
 
-    window.onbeforeunload = function(){
-      if($rootScope.isAdmin) $scope.invalidateRoom()
-       $scope.invalidateRoom()//Not working :(
-      return "are you sure ?"
-    }
+    angular.element($window)
+    .on('beforeunload', function(e) {
+      var msg = "\o/"
+      e.returnValue = msg
+      return msg
+    })
+    .on('unload', function(e) {
+      if($rootScope.isAdmin)
+        $scope.invalidateRoom()
+    })
+
 
     $scope.onPlayBtnClicked = function(){
       openpeer.sendAll({
