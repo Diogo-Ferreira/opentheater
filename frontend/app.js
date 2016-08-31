@@ -165,28 +165,22 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
 
     $scope.room = Room.getRoom($routeParams.id)
 
-    //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
-    var client = new WebTorrent();
+    if($rootScope.client == undefined) $rootScope.client = new WebTorrent()
 
     //TODO: JS's not like java, having a parent class for peeradmin, peer and peerjs encapsulation is maybe not the good way, check angular factories !
     if($rootScope.isAdmin){
       openpeer = $rootScope.adminInstance
-
       openpeer.OnMessage = $scope.OnMessage
-
-      client.add($rootScope.magnet, function(torrent){
-        console.log('Added torrent '+$rootScope.magnet)
-        torrent.files.forEach(function (file){
-          file.renderTo('#vid',{
-            autoplay : false
-          },function(err,elem){
-            console.log(err)
-            console.log(elem)
-          });
-          openpeer.OnNewPeer = function(conn){
-            console.log("New Peer Connected !")
-          }
-        })
+      $rootScope.torrent.files.forEach(function (file){
+        file.renderTo('#vid',{
+          autoplay : false
+        },function(err,elem){
+          console.log(err)
+          console.log(elem)
+        });
+        openpeer.OnNewPeer = function(conn){
+          console.log("New Peer Connected !")
+        }
       })
 
     } else {
@@ -195,7 +189,7 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
          $scope.roomData = roomData
          openpeer.OnMessage = $scope.OnMessage
          openpeer.listen(openpeer.peerAdmin)
-        client.add(roomData.torrent_magnet_link, function(torrent){
+        $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
           console.log('Added torrent '+ roomData.torrent_magnet_link)
           torrent.files.forEach(function(file){
             file.renderTo('#vid',{
@@ -252,12 +246,13 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
         //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
-        var client = new WebTorrent()
-        client.seed($scope.file.files[0],
+        $rootScope.client = new WebTorrent()
+        $rootScope.client.seed($scope.file.files[0],
             {
                 //TODO: store de tracker name in the db, in case if the user want's to use his own tracker
                 announceList: [["ws://opentheater.infinit8.io:8998"]]
             }, function (torrent) {
+                $rootScope.torrent = torrent
                 // console.log("Client is seeding " + torrent.magnetURI)
                 $rootScope.adminInstance = new OpenPeerAdmin(function () {
                         $http({
