@@ -27,7 +27,8 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         $scope.punchline = punchline
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
-        setInterval(function(){
+        var punchtimer = setInterval(function(){
+            //TODO: Fetch punchlines only once..
             $http.get('./assets/json/punchlines.json').success(function(data){
                 console.log(data)
                 var id = Math.floor(Math.random()*data.length)
@@ -58,6 +59,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                         }
                     }).then(function (response) {
                         $rootScope.magnet = torrent.magnetURI
+                        clearInterval(punchtimer) //Pls sthap it, think about the poor cpu
                         $window.location.href = "#/watch/" + response.data._id
                     })
 

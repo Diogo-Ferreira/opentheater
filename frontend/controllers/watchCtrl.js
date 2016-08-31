@@ -4,7 +4,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     $scope.showPlay = true
     var openpeer
     var started = false
-
+    var syncTimer
     //For invalidateRoom, since were not sure that routeParams will be avaible on destroy
     var roomid = $routeParams.id
 
@@ -76,19 +76,44 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 document.getElementById("vid").pause()
             }else if(data.cmd == "goto"){
                 started = true
-                document.getElementById("vid").currentTime = data.to
-                document.getElementById("vid").play()
+
+                //Set the video time at the rendez-vous video time
+                document.getElementById("vid").currentTime = data.time_info.startVidAt
+
+                //Check if current time is equal to the rendez-vous
+                var syncTimer = setInterval(function(playAt){
+
+                    //Rendez-vous reached, play the video !
+                    if(parseInt(Date.now()) >= playAt){
+                       document.getElementById("vid").play()
+                       clearInterval(syncTimer)
+                     }
+                  },
+                  20,
+                  parseInt(data.time_info.playAtTimeStamp)
+                )
             }
         }else if(data.type == "info"){
             console.log("One peer's ready !")
-            if(data.info == "ready" && started){
+            if(data.info == "ready" && started && $scope.isAdmin){
                 openpeer.sendTo(peer,{
                     "type" : "cmd",
                     "cmd"  : "goto",
-                    "to"   : document.getElementById("vid").currentTime
+                    "time_info"   : $scope.getSyncTimeInfo(document.getElementById("vid").currentTime)
                 })
             }
         }
+    }
+
+    /**
+    * Returns rendez-vous timestamps for video sync beetween the peers
+    */
+    $scope.getSyncTimeInfo = function(currentVidTime){
+      var msDelay = 5000.0
+      return {
+        "playAtTimeStamp" : Date.now() + msDelay, //Play the video, in 5 seconds
+        "startVidAt" : currentVidTime + parseFloat(msDelay / 1000.0)
+      }
     }
 
     //Gets room information
