@@ -40,8 +40,11 @@ opentheater.service('Room', function ($http) {
     // All posts
     that.rooms = {}
     that.getRooms = function () {
-        return $http.get('./assets/json/rooms.json').success(function (data) {
-            that.rooms = data
+        return $http({
+          method : 'GET',
+          url : '/explore'
+        }).success(function (data) {
+            that.rooms = data.data
             return data
         }).error(function (data) {
             console.log("Cannot retrieve data")
@@ -186,7 +189,7 @@ opentheater.controller('WatchCtrl', function ($scope, $http, Room, $routeParams,
     } else {
        $scope.loadRoom(function(roomData){
          openpeer = new OpenPeer(roomData.admin)
-         $scope.roomData = roomData
+         $scope.room = roomData
          openpeer.OnMessage = $scope.OnMessage
          openpeer.listen(openpeer.peerAdmin)
         $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
@@ -261,7 +264,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                                 "joinable_after_start": true,
                                 "name": elems.room.name,
                                 "admin": $rootScope.adminInstance.peer.peerid,
-                                "private": true,
+                                "private": false,
                                 "max_spectators": elems.room.nbmax,
                                 "description": elems.movie.description
                             }
