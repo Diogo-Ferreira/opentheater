@@ -51,7 +51,7 @@ opentheater.service('Room', function ($http) {
         });
     }
 
-
+    //Avion
     that.getRoom = function (id) {
         var room = {};
         // Challenge : do the same with one single line
@@ -263,7 +263,6 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         $scope.punchline = punchline
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
-<<<<<<< HEAD
         setInterval(function(){
           $http.get('./assets/json/punchlines.json').success(function(data){
               console.log(data)
@@ -274,14 +273,9 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
           })
           $scope.punchline = punchline
         }, 4527)
-
-        var client = new WebTorrent()
-        client.seed($scope.file.files[0],
-=======
         //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
         $rootScope.client = new WebTorrent()
         $rootScope.client.seed($scope.file.files[0],
->>>>>>> 035aa6818dc8a7c2475199d65b0b05e76e98e5e7
             {
                 //TODO: store de tracker name in the db, in case if the user want's to use his own tracker
                 announceList: [["ws://opentheater.infinit8.io:8998"]]
