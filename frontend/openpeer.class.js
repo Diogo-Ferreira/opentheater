@@ -87,7 +87,6 @@ class OpenPeerAdmin extends OpenPeer{
   sendAll(data,except){
     for(var el in this.clients){
       if(this.clients[el].peer != except){
-        console.log("sent to :")
         console.log(this.clients[el])
         this.sendTo(this.clients[el], data);
       }
