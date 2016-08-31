@@ -15,7 +15,10 @@ app.use(express.static('./frontend'))
 
 
 app.get('/explore',function(req,res){
-  data.find(data.db,{"private" : false},'rooms',function(rooms){
+  data.find(data.db,{"private" : false,"valid":true,
+  "last_ping_timestamp":{
+    $gte : Date.now() - 5 * 60 * 1000
+  }},'rooms',function(rooms){
     res.json(rooms);
   });
 });
@@ -30,11 +33,43 @@ app.post('/create',function(req,res){
     "admin" : req.body.admin,
     "private" : req.body.private,
     "max_spectators" : req.body.max_spectators,
-    "description" : req.body.description
+    "description" : req.body.description,
+    "valid" : true,
+    "last_ping_timestamp" : Date.now()
   },function (result,data){
     res.send(data)
   });
 });
+
+app.post('/invalidate',function(req,res){
+  console.log(req.body)
+  data.update(data.db,{
+    "_id" : data.ObjectID(req.body.roomid)
+  },
+  {
+      "valid" : false
+  },"rooms",function(err,results){
+    console.log(err)
+    res.send(results)
+  });
+});
+
+/**
+* In order to invalidate the room when the admin quits the browser, we have
+* to use a ping system in order to know if the admin stills there
+*/
+app.post('/ping_room',function(req,res){
+  console.log("Ping ! ..... Pong !")
+  data.update(data.db,{
+    "_id" : data.ObjectID(req.body.roomid)
+  },
+  {
+      "last_ping_timestamp" : Date.now()
+  },"rooms",function(err,results){
+    console.log(err)
+    res.send(results)
+  });
+})
 
 
 app.get('/watch',function(req,res){

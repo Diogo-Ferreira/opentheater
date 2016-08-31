@@ -10,6 +10,17 @@ var init = function(url){
   });
 }
 
+var update = function(db,where,set,collectionName,callback) {
+   db.collection(collectionName).updateOne(
+      where,
+      {
+        $set: set
+      }, function(err, results) {
+      console.log(results);
+      callback(err,results);
+   });
+};
+
 
 
 var find = function(db,attributes,collectionName,callback){
@@ -30,5 +41,6 @@ var insert = function(db,collectionName,collectionData,callback){
 
 module.exports.insert = insert;
 module.exports.find = find;
+module.exports.update = update;
 module.exports.init = init;
 module.exports.ObjectID = require('mongodb').ObjectID;
