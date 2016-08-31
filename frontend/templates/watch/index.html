@@ -34,7 +34,7 @@
                         <md-content style="height: 576px;" md-theme="altTheme">
                             <section>
                                 <md-list layout-padding>
-                                    <md-list-item class="md-3-line" ng-repeat="message in messages by $index">
+                                    <md-list-item class="md-3-line" ng-repeat="message in messages track by $index">
                                         <div class="md-list-item-text">
                                             <h3 align="left">{{message.username}}</h3>
                                             <p>
