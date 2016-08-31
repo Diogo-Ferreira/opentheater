@@ -9,6 +9,8 @@ OpenTheater is a web applications which allows users to watch content togheter l
 
 The content is delivered in p2p via webtorrent which uses WebRTC.
 
+You can watch a first shot here : http://opentheater.infinit8.io/#/ 
+
 # Primary features
 
 * Room creation ( Public or Private, with invite by link)
