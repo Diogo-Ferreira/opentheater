@@ -50,6 +50,8 @@ opentheater.service('Room', function ($http) {
             console.log("Cannot retrieve data")
         });
     }
+
+    //Avion
     that.getRoom = function (id) {
         var room = {};
         // Challenge : do the same with one single line
@@ -236,7 +238,18 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
     // Create
     $rootScope.isAdmin = true
 
+    var punchline
+
     $scope.file = {}
+    $http.get('./assets/json/punchlines.json').success(function(data){
+        console.log(data)
+        var id = Math.floor(Math.random()*data.length)
+        punchline = data[id].punchline
+        console.log(punchline)
+        return data
+    })
+
+
 
     $scope.uploadFile = function (upFile) {
         $scope.file = upFile
@@ -246,8 +259,20 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
     $scope.createRoomAlpha = function (elems) {
 
         // Swag animation 3000 thank you Bryan
+
+        $scope.punchline = punchline
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
+        setInterval(function(){
+          $http.get('./assets/json/punchlines.json').success(function(data){
+              console.log(data)
+              var id = Math.floor(Math.random()*data.length)
+              punchline = data[id].punchline
+              console.log(punchline)
+              return data
+          })
+          $scope.punchline = punchline
+        }, 4527)
         //TODO: maybe it would more efficient and clean to only use one instance of webtorrent
         $rootScope.client = new WebTorrent()
         $rootScope.client.seed($scope.file.files[0],

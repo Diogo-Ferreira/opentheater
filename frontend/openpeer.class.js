@@ -42,7 +42,6 @@ class OpenPeer extends abstractOpenPeer{
 
     this.peer.on('error', function(err){
       console.log(err)
-      console.log('fils de pute')
     })
   }
 }
