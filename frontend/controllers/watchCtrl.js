@@ -89,7 +89,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                        clearInterval(syncTimer)
                      }
                   },
-                  20,
+                  10,
                   parseInt(data.time_info.playAtTimeStamp)
                 )
             }
@@ -109,7 +109,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     * Returns rendez-vous timestamps for video sync beetween the peers
     */
     $scope.getSyncTimeInfo = function(currentVidTime){
-      var msDelay = 5000.0
+      var msDelay = 20000.0
       return {
         "playAtTimeStamp" : Date.now() + msDelay, //Play the video, in 5 seconds
         "startVidAt" : currentVidTime + parseFloat(msDelay / 1000.0)
