@@ -13,8 +13,6 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         return data
     })
 
-
-
     $scope.uploadFile = function (upFile) {
         $scope.file = upFile
         console.log($scope.file.files[0])
@@ -27,17 +25,14 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
         $scope.punchline = punchline
         document.getElementById("form").style.display = "none"
         document.getElementById("loading").style.display = "block"
-        var punchtimer = setInterval(function(){
-            //TODO: Fetch punchlines only once..
-            $http.get('./assets/json/punchlines.json').success(function(data){
-                console.log(data)
+        var punchtimer = undefined
+        $http.get('./assets/json/punchlines.json').success(function(data){
+                punchtimer = setInterval(function(data){
                 var id = Math.floor(Math.random()*data.length)
                 punchline = data[id].punchline
-                console.log(punchline)
-                return data
-            })
-            $scope.punchline = punchline
-        }, 4527)
+                $scope.punchline = punchline
+            }, 4527,data)
+        })
 
         $rootScope.client = new WebTorrent()
         $rootScope.client.seed($scope.file.files[0],

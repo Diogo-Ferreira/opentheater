@@ -82,7 +82,6 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 $scope.torrent.critical(data.time_info.startPiece,data.time_info.endPiece)
                 //Check if current time is equal to the rendez-vous
                 var syncTimer = setInterval(function(playAt){
-
                     //Rendez-vous reached, play the video !
                     if(parseInt(Date.now()) >= playAt){
                        document.getElementById("vid").play()
