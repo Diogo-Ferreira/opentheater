@@ -76,10 +76,10 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 document.getElementById("vid").pause()
             }else if(data.cmd == "goto"){
                 started = true
-
+                console.log(data.time_info)
                 //Set the video time at the rendez-vous video time
                 document.getElementById("vid").currentTime = data.time_info.startVidAt
-
+                $scope.torrent.critical(data.time_info.startPiece,data.time_info.endPiece)
                 //Check if current time is equal to the rendez-vous
                 var syncTimer = setInterval(function(playAt){
 
@@ -92,6 +92,14 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                   10,
                   parseInt(data.time_info.playAtTimeStamp)
                 )
+            }else if(data.cmd == "quickresync" && $rootScope.isAdmin){
+              openpeer.sendTo(peer,{
+                  "type" : "cmd",
+                  "cmd"  : "quickgoto",
+                  "to"   : document.getElementById("vid").currentTime
+              })
+            }else if(data.cmd == "quickgoto"){
+              document.getElementById("vid").currentTime = data.to
             }
         }else if(data.type == "info"){
             console.log("One peer's ready !")
@@ -109,10 +117,13 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     * Returns rendez-vous timestamps for video sync beetween the peers
     */
     $scope.getSyncTimeInfo = function(currentVidTime){
-      var msDelay = 20000.0
+      var msDelay = 60000.0
+      var startPiece = parseFloat((document.getElementById("vid").currentTime+msDelay) *  $rootScope.torrent.files[0].length / document.getElementById("vid").duration) / $rootScope.torrent.pieceLength
       return {
         "playAtTimeStamp" : Date.now() + msDelay, //Play the video, in 5 seconds
-        "startVidAt" : currentVidTime + parseFloat(msDelay / 1000.0)
+        "startVidAt" : currentVidTime + parseFloat(msDelay / 1000.0),
+        "startPiece" : parseInt(startPiece),
+        "endPiece"   : parseInt(startPiece) + 10
       }
     }
 
@@ -125,6 +136,13 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             //Throw error
             console.log(response)
         })
+    }
+
+    $scope.quickResync = function(){
+      openpeer.sendTo(openpeer.peerAdmin,{
+          "type" : "cmd",
+          "cmd" : "quickresync"
+      })
     }
 
     $scope.room = Room.getRoom($routeParams.id)
@@ -165,6 +183,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             openpeer.OnMessage = $scope.OnMessage
             openpeer.listen(openpeer.peerAdmin)
             $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
+
+                $scope.torrent = torrent
+
                 console.log('Added torrent '+ roomData.torrent_magnet_link)
                 torrent.files.forEach(function(file){
                     file.renderTo('#vid',{
