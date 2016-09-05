@@ -49,6 +49,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             return msg
         })
         .on('unload', function(e) {
+            openpeer.peer.destroy()
             if($rootScope.isAdmin)
                 $scope.invalidateRoom()
         })
@@ -159,6 +160,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
               $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0}})
               $scope.$apply()
               console.log($scope.peers)
+            }else if(data.info == "peerdisconnected" && !$scope.isAdmin){
+              console.log("One peer's gone")
+              $scope.peers = $scope.peers.filter(e => e.id != data.peer)
             }
         }
     }
@@ -218,6 +222,14 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 })
                 $scope.$apply()
             }
+
+            openpeer.OnConnClose = (conn) => {
+              openpeer.sendAll({
+                "type" : "info",
+                "info" : "peerdisconnected",
+                "peer" : conn.peer
+              },conn.peer)
+            }
         })
         //Pings the room each minute to say we're alive, so don't destroy the room !
         setInterval(function(){
@@ -256,7 +268,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                   torrent.on('download', function (bytes) {
                   })
               })
-              $scope.apply()
+              $scope.$apply()
             })
         })
     };

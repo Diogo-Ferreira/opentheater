@@ -35,7 +35,8 @@ app.post('/create',function(req,res){
     "max_spectators" : req.body.max_spectators,
     "description" : req.body.description,
     "valid" : true,
-    "last_ping_timestamp" : Date.now()
+    "last_ping_timestamp" : Date.now(),
+    "tags" : req.body.tags.toString().split(",")
   },function (result,data){
     res.send(data)
   });

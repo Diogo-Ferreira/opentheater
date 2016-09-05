@@ -19,6 +19,11 @@
                 </md-input-container>
 
                 <md-input-container>
+                  <label>Tags</label>
+                  <md-chips ng-model="tags" md-separator-keys="keys" placeholder="Enter a tag" secondary-placeholder="Space separed tags"></md-chips>
+                </md-input-container>
+
+                <md-input-container>
                     <label>Nombre de personnes max</label>
                     <input type="number" step="any" ng-model="room.nbmax" min="1"
                            max="100" value="1"/>

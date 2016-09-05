@@ -1,5 +1,5 @@
 // Hello OpenTheater :)
-var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial"]);
+var opentheater = angular.module("openTheater", ["ngRoute", "ngMaterial","ngMessages"]);
 
 
 // Wonderful routes
@@ -30,6 +30,3 @@ opentheater.config(function ($routeProvider, $mdIconProvider) {
         })
         .otherwise({redirectTo: "/"});
 });
-
-
-

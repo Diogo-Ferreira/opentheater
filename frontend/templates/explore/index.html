@@ -45,13 +45,10 @@
                             <span class="md-headline">{{room.name}}</span>
                         </a>
                         <span class="md-subhead">{{room.description}}</span>
-                        <md-chips>
-                            <md-chip>Bryan Muhmenthaler</md-chip>
-                            <md-chip>in 30 minutes</md-chip>
-                            <md-chip>{{room.is_private ? "Private" : "Public"}}</md-chip>
-                        </md-chips>
                         <div layout="row" style="margin-top: 10px;">
-                            <span ng-repeat="tag in room.tags" class="tag-chip">{{tag.name}}</span>
+                            <md-chips ng-repeat="tag in room.tags">
+                              <md-chip>{{ tag }}</md-chip>
+                            </md-chips>
                         </div>
                     </md-card-title-text>
                 </md-card-title>
