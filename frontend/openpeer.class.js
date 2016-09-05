@@ -1,3 +1,4 @@
+//TODO: replace with angular service
 class abstractOpenPeer {
   constructor(){}
 
@@ -5,9 +6,8 @@ class abstractOpenPeer {
     var that = this
     conn.on('open', function(){
       conn.on('data', function(data){
-        //Do some magic here.
-        if(that.OnMessage,conn)
-          that.OnMessage(data);
+        if(that.OnMessage)
+          that.OnMessage(data,conn);
       })
     })
   }
@@ -22,22 +22,23 @@ class abstractOpenPeer {
 }
 
 class OpenPeer extends abstractOpenPeer{
-  constructor(adminId){
+  constructor(adminId,onReady){
     super()
-    //Dom est un bel homme
+
+    var that = this
+
     this.adminId = adminId
 
     this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
-
 
     this.peerAdmin = this.peer.connect(adminId,{
       reliable: true
     })
 
-    this.listen(this.peerAdmin)
-
     this.peer.on('open', function(id){
-      this.peerid = id
+      that.peerid = id
+      if(onReady)
+        onReady()
     })
 
     this.peer.on('error', function(err){
@@ -49,9 +50,10 @@ class OpenPeer extends abstractOpenPeer{
 class OpenPeerAdmin extends OpenPeer{
   constructor(onReady){
     super()
+    var that = this
     this.peer = new Peer({key: '0nu1ohrtpnfjemi'})
     this.peer.on('open', function(id){
-      this.peerid = id
+      that.peerid = id
       onReady()
     })
 
@@ -61,10 +63,8 @@ class OpenPeerAdmin extends OpenPeer{
       console.log('Un lapin s\'est connecté')
       that.clients[conn.id] = conn;
       that.listen(that.clients[conn.id])
-
       if(that.OnNewPeer)
         that.OnNewPeer(conn)
-
     })
     this.peer.on('error', function(err){
       console.log(err)
@@ -84,9 +84,10 @@ class OpenPeerAdmin extends OpenPeer{
   }
 
   sendAll(data,except){
+    console.log("SEND ALL")
+    console.log(this.clients)
     for(var el in this.clients){
       if(this.clients[el].peer != except){
-        console.log(this.clients[el])
         this.sendTo(this.clients[el], data);
       }
     }

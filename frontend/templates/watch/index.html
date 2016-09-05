@@ -2,11 +2,22 @@
 <div class="site-wrapper-inner">
     <div >
         <div class="inner cover black">
+          <h1 style="text-transform: uppercase;"><b>{{peerName}}</b></h1>
             <h1 style="text-transform: uppercase;"><b>{{room.name}}</b></h1>
             <br/>
             <div flex="100">
                 <div layout="row" layout-md="column" layout-sm="column">
                     <div flex-md="66" flex-order-md="1">
+                        <div id="reactions-container">
+                          <div class="reaction" ng-repeat="peer in peers" style="display:inline-block;">
+                            <span class="reaction-img-container">
+                              <img class="reaction-img" src ="../assets/img/reactions/{{peer.currentReaction.id}}.png" width="50px"/>
+                            </span>
+                            <span class="reaction-peer-name">
+                              {{peer.id}}
+                            </span>
+                          </div>
+                        </div>
                         <video id="vid" ng-model="video"  autobuffer style="width:100%;max-width:1280px;height:100%;max-height:720px;">
                         </video>
                         <span ng-if="isAdmin">
@@ -14,6 +25,11 @@
                           <md-button ng-show="!showPlay" ng-model="pauseBtn" ng-click="onPauseBtnClicked()">Pause</md-button>
                         </span>
                         <md-button ng-click="quickResync()">Quick resync</md-button>
+                        <div id="reaction-bar">
+                          <span class="reaction-icon" ng-repeat="reaction in reactions">
+                            <img src="../assets/img/reactions/{{reaction.id}}.png" width="30px" ng-click="onReactionClicked(reaction)"/>
+                          </span>
+                        </div>
                         <div layout="column">
                             <md-chips>
                                 <md-chip>Bryan Muhmenthaler</md-chip>

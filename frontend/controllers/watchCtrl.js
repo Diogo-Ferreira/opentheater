@@ -1,10 +1,30 @@
 opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $routeParams, $rootScope){
 
     $scope.messages = []
+    $scope.peers = []
     $scope.showPlay = true
+    $scope.reactions = []
     var openpeer
     var started = false
     var syncTimer
+    $scope.peerName = "I'm "
+
+    for(var i = 1; i <= 5;i++){
+      $scope.reactions.push({
+        id : i
+      })
+    }
+
+    $scope.onReactionClicked = function(reaction){
+      console.log(reaction)
+      openpeer.sendAll({
+        "type" : "cmd",
+        "cmd"  : "showreaction",
+        "reaction" : reaction,
+        "peer" : openpeer.peerid
+      })
+    }
+
     //For invalidateRoom, since were not sure that routeParams will be avaible on destroy
     var roomid = $routeParams.id
 
@@ -64,7 +84,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     }
 
     //PeerJS on message callback
+    //TODO : implement state pattern
     $scope.OnMessage = function(data,peer){
+        that = this
         console.log(data)
         if(data.type == "chat"){
             $scope.messages.push(data)
@@ -99,6 +121,13 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
               })
             }else if(data.cmd == "quickgoto"){
               document.getElementById("vid").currentTime = data.to
+            }else if(data.cmd == "showreaction"){
+              $scope.peers.forEach(p => {
+                if(p.id === data.peer){
+                  p.currentReaction = data.reaction
+                  $scope.$apply()
+                }
+              })
             }
         }else if(data.type == "info"){
             console.log("One peer's ready !")
@@ -108,15 +137,38 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                     "cmd"  : "goto",
                     "time_info"   : $scope.getSyncTimeInfo(document.getElementById("vid").currentTime)
                 })
+            }else if(data.info == "ready" && !started && $scope.isAdmin){
+              openpeer.sendTo(peer,{
+                "type" : "info",
+                "info" : "peers",
+                "peers": Object.keys(openpeer.clients).map(function(key){return {"id" : openpeer.clients[key].peer,"currentReaction" : {"id":0}}})
+              })
+              openpeer.sendAll({
+                "type" : "info",
+                "info" : "newpeer",
+                "peer" : { "id" : peer.peer ,"currentReaction" : {"id":0}}
+              },peer.peer)
+            }else if(data.info == "newpeer" && !$scope.isAdmin){
+              console.log("newpeerinforeceveid")
+              $scope.peers.push(data.peer)
+              $scope.$apply()
+              console.log($scope.peers)
+            }else if(data.info == "peers" && !$scope.isAdmin){
+              console.log("peersreceveid")
+              $scope.peers = data.peers.filter(e => e.id != openpeer.peerid)
+              $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0}})
+              $scope.$apply()
+              console.log($scope.peers)
             }
         }
     }
 
     /**
-    * Returns rendez-vous timestamps for video sync beetween the peers
+    * Gets rendez-vous timestamps for video sync beetween the peers
     */
     $scope.getSyncTimeInfo = function(currentVidTime){
       var msDelay = 60000.0
+      //TODO : Split into more lines to clearify
       var startPiece = parseFloat((document.getElementById("vid").currentTime+msDelay) *  $rootScope.torrent.files[0].length / document.getElementById("vid").duration) / $rootScope.torrent.pieceLength
       return {
         "playAtTimeStamp" : Date.now() + msDelay, //Play the video, in 5 seconds
@@ -148,7 +200,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
 
     if($rootScope.client == undefined) $rootScope.client = new WebTorrent()
 
-    //TODO: JS's not like java, having a parent class for peeradmin, peer and peerjs encapsulation is maybe not the good way, check angular factories !
+    //Are we the room admin ? If yes, we're also the WebRTC network HOST
     if($rootScope.isAdmin){
         openpeer = $rootScope.adminInstance
         openpeer.OnMessage = $scope.OnMessage
@@ -161,9 +213,12 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             });
             openpeer.OnNewPeer = function(conn){
                 console.log("New Peer Connected !")
+                $scope.peers.push({
+                  "id" : conn.peer
+                })
+                $scope.$apply()
             }
         })
-
         //Pings the room each minute to say we're alive, so don't destroy the room !
         setInterval(function(){
             $http({
@@ -177,30 +232,31 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
 
     } else {
         $scope.loadRoom(function(roomData){
-            openpeer = new OpenPeer(roomData.admin)
-            $scope.room = roomData
-            openpeer.OnMessage = $scope.OnMessage
-            openpeer.listen(openpeer.peerAdmin)
-            $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
-
-                $scope.torrent = torrent
-
-                console.log('Added torrent '+ roomData.torrent_magnet_link)
-                torrent.files.forEach(function(file){
-                    file.renderTo('#vid',{
-                        controls : false,
-                    },function(err,elem){
-                        console.log(err);
-                        console.log(elem);
-                        openpeer.sendTo(openpeer.peerAdmin,{
-                            "type" : "info",
-                            "info" : "ready"
-                        })
-                        document.getElementById("vid").pause()
-                    })
-                })
-                torrent.on('download', function (bytes) {
-                })
+            openpeer = new OpenPeer(roomData.admin,() => {
+              $scope.peerName = "I'm " + openpeer.peerid
+              $scope.room = roomData
+              openpeer.OnMessage = $scope.OnMessage
+              openpeer.listen(openpeer.peerAdmin)
+              $rootScope.client.add(roomData.torrent_magnet_link, function(torrent){
+                  $scope.torrent = torrent
+                  console.log('Added torrent '+ roomData.torrent_magnet_link)
+                  torrent.files.forEach(function(file){
+                      file.renderTo('#vid',{
+                          controls : false,
+                      },function(err,elem){
+                          console.log(err);
+                          console.log(elem);
+                          openpeer.sendTo(openpeer.peerAdmin,{
+                              "type" : "info",
+                              "info" : "ready"
+                          })
+                          document.getElementById("vid").pause()
+                      })
+                  })
+                  torrent.on('download', function (bytes) {
+                  })
+              })
+              $scope.apply()
             })
         })
     };
