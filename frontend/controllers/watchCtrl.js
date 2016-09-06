@@ -15,7 +15,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
       })
     }
 
-    $scope.onReactionClicked = function(reaction){
+    $scope.onReactionClicked = (reaction) => {
       console.log(reaction)
       openpeer.sendAll({
         "type" : "cmd",
@@ -28,7 +28,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     //For invalidateRoom, since were not sure that routeParams will be avaible on destroy
     var roomid = $routeParams.id
 
-    $scope.invalidateRoom = function(){
+    $scope.invalidateRoom = () => {
         $http({
             method : 'POST',
             url : '/invalidate',
@@ -38,23 +38,24 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         })
     }
 
-    $scope.$on('$destroy', function() {
+    $scope.$on('$destroy', () => {
         if($rootScope.isAdmin) $scope.invalidateRoom()
     });
 
     angular.element($window)
-        .on('beforeunload', function(e) {
+        .on('beforeunload', (e) => {
             var msg = "\o/"
             e.returnValue = msg
             return msg
         })
-        .on('unload', function(e) {
+        .on('unload', (e) =>  {
+            openpeer.peer.destroy()
             if($rootScope.isAdmin)
                 $scope.invalidateRoom()
         })
 
 
-    $scope.onPlayBtnClicked = function(){
+    $scope.onPlayBtnClicked = () => {
         openpeer.sendAll({
             "type" : "cmd",
             "cmd"  : "play"
@@ -64,7 +65,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         started = true
     }
 
-    $scope.onPauseBtnClicked = function () {
+    $scope.onPauseBtnClicked = () =>  {
         openpeer.sendAll({
             "type": "cmd",
             "cmd": "pause"
@@ -73,7 +74,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         $scope.showPlay = !$scope.showPlay
     }
 
-    $scope.sendChatMessage = function () {
+    $scope.sendChatMessage = () => {
         var msg = {
             "type": "chat",
             "content": $scope.currentMessage,
@@ -85,7 +86,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
 
     //PeerJS on message callback
     //TODO : implement state pattern
-    $scope.OnMessage = function(data,peer){
+    $scope.OnMessage = (data,peer) => {
         that = this
         console.log(data)
         if(data.type == "chat"){
@@ -122,7 +123,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             }else if(data.cmd == "quickgoto"){
               document.getElementById("vid").currentTime = data.to
             }else if(data.cmd == "showreaction"){
-              $scope.peers.forEach(p => {
+              $scope.peers.forEach((p) => {
                 if(p.id === data.peer){
                   p.currentReaction = data.reaction
                   $scope.$apply()
@@ -159,6 +160,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
               $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0}})
               $scope.$apply()
               console.log($scope.peers)
+            }else if(data.info == "peerdisconnected" && !$scope.isAdmin){
+              console.log("One peer's gone")
+              $scope.peers = $scope.peers.filter(e => e.id != data.peer)
             }
         }
     }
@@ -166,7 +170,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     /**
     * Gets rendez-vous timestamps for video sync beetween the peers
     */
-    $scope.getSyncTimeInfo = function(currentVidTime){
+    $scope.getSyncTimeInfo = (currentVidTime) => {
       var msDelay = 60000.0
       //TODO : Split into more lines to clearify
       var startPiece = parseFloat((document.getElementById("vid").currentTime+msDelay) *  $rootScope.torrent.files[0].length / document.getElementById("vid").duration) / $rootScope.torrent.pieceLength
@@ -179,17 +183,17 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     }
 
     //Gets room information
-    $scope.loadRoom = function(cb){
-        $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then(function(response){
+    $scope.loadRoom = (cb) => {
+        $http({method: 'GET', url: '/watch', params: {roomid: $routeParams.id}}).then((response) => {
             var roomData = angular.fromJson(response.data[0])
             cb(roomData)
-        }, function(response){
+        }, (response) => {
             //Throw error
             console.log(response)
         })
     }
 
-    $scope.quickResync = function(){
+    $scope.quickResync = () => {
       openpeer.sendTo(openpeer.peerAdmin,{
           "type" : "cmd",
           "cmd" : "quickresync"
@@ -203,20 +207,28 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     //Are we the room admin ? If yes, we're also the WebRTC network HOST
     if($rootScope.isAdmin){
         openpeer = $rootScope.adminInstance
+        $scope.peerName = "I'm " + openpeer.peerid
         openpeer.OnMessage = $scope.OnMessage
-        $rootScope.torrent.files.forEach(function (file){
+        $rootScope.torrent.files.forEach((file) => {
             file.renderTo('#vid',{
                 autoplay : false
-            },function(err,elem){
+            },(err,elem) => {
                 console.log(err)
                 console.log(elem)
             });
-            openpeer.OnNewPeer = function(conn){
+            openpeer.OnNewPeer = (conn) => {
                 console.log("New Peer Connected !")
                 $scope.peers.push({
                   "id" : conn.peer
                 })
                 $scope.$apply()
+            }
+            openpeer.OnConnClose = (conn) => {
+              openpeer.sendAll({
+                "type" : "info",
+                "info" : "peerdisconnected",
+                "peer" : conn.peer
+              },conn.peer)
             }
         })
         //Pings the room each minute to say we're alive, so don't destroy the room !
@@ -256,7 +268,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                   torrent.on('download', function (bytes) {
                   })
               })
-              $scope.apply()
+              $scope.$apply()
             })
         })
     };

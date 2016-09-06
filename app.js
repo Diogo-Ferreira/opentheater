@@ -16,10 +16,9 @@ app.use(express.static('./node_modules'))
 
 
 app.get('/explore',function(req,res){
-  data.find(data.db,{"private" : false,"valid":true,
-  "last_ping_timestamp":{
-    $gte : Date.now() - 5 * 60 * 1000
-  }},'rooms',function(rooms){
+  var d = parseFloat(Date.now() - 60000.0)
+  console.log(d)
+  data.find(data.db,{"private" : false,"valid":true, "last_ping_timestamp" : {$gte : d}},'rooms',function(rooms){
     res.json(rooms);
   });
 });
@@ -31,11 +30,12 @@ app.post('/create',function(req,res){
     "joignable_after_start" : req.body.joignable_after_start,
     "name"  : req.body.name,
     "admin" : req.body.admin,
-    "private" : req.body.private,
+    "private" : req.body.private == 'true',
     "max_spectators" : req.body.max_spectators,
     "description" : req.body.description,
     "valid" : true,
-    "last_ping_timestamp" : Date.now()
+    "last_ping_timestamp" : Date.now(),
+    "tags" : req.body.tags.toString().split(",")
   },function (result,data){
     res.send(data)
   });

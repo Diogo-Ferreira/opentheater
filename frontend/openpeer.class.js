@@ -81,6 +81,12 @@ class OpenPeerAdmin extends OpenPeer{
         that.sendAll(data,conn.peer)
       })
     })
+    conn.on('close',function (){
+      if(that.OnConnClose)
+        that.OnConnClose(conn)
+        
+      delete that.clients[conn.id]
+    })
   }
 
   sendAll(data,except){

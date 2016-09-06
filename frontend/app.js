@@ -1,6 +1,6 @@
 // Hello OpenTheater :)
-var opentheater = angular.module("openTheater", ["auth0.lock", "angular-jwt", "ngRoute", "ngMaterial"])
 
+var opentheater = angular.module("openTheater", ["auth0.lock", "angular-jwt", "ngRoute", "ngMaterial", "ngMessages"])
 
 
 // Wonderful routes
@@ -72,6 +72,3 @@ opentheater.run(function(authService, $rootScope, authManager) {
     // refreshed and maintain authentication
     authManager.checkAuthOnRefresh();
 });
-
-
-

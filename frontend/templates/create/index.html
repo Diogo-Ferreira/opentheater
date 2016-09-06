@@ -16,6 +16,9 @@
 
 <div ng-if="isAuthenticated">
 
+
+
+
     <div layout="column" layout-align="center center" layout-fill="layout-fill">
         <div layout="column" class="loginBox md-whiteframe-z1" style="width:400px;" id="form">
             <md-toolbar>
@@ -36,15 +39,24 @@
                         <textarea ng-model="movie.description"></textarea>
                     </md-input-container>
 
+
+
+                    <md-input-container>
+                        <label>Tags</label>
+                        <md-chips ng-model="tags" md-separator-keys="keys" placeholder="Enter a tag" secondary-placeholder="Space separed tags"></md-chips>
+                    </md-input-container>
+
                     <md-input-container>
                         <label>Nombre de personnes max</label>
                         <input type="number" step="any" ng-model="room.nbmax" min="1"
                                max="100" value="1"/>
                     </md-input-container>
                     <br/>
-                    <md-checkbox ng-model="room.private" aria-label="Checkbox 1">
-                        Privé ?
-                    </md-checkbox>
+                    <md-input-container>
+                        <md-checkbox ng-model="room.private" aria-label="Checkbox 1">
+                            Privé ?
+                        </md-checkbox>
+                    </md-input-container>
                     <br/>
 
                     <md-input-container>

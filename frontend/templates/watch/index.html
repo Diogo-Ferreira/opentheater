@@ -14,7 +14,8 @@
     </div>
 </div>
 
-<div ng-if="isAuthenticated">
+<!-- ng-if pose probleme -->
+<div>
     <div class="site-wrapper-inner">
         <div>
             <div class="inner cover black">
@@ -50,18 +51,17 @@
                             <img src="../assets/img/reactions/{{reaction.id}}.png" width="30px"
                                  ng-click="onReactionClicked(reaction)"/>
                           </span>
-                            </div>
-                            <div layout="column">
-                                <md-chips>
-                                    <md-chip>Bryan Muhmenthaler</md-chip>
-                                    <md-chip>in 30 minutes</md-chip>
-                                    <md-chip>{{room.is_private ? "Private" : "Public"}}</md-chip>
-                                </md-chips>
-                                <div layout="row" style="margin-top: 10px;">
-                                    <span ng-repeat="tag in room.tags" class="tag-chip">{{tag.name}}</span>
-                                </div>
-                            </div>
+
                         </div>
+                        <div layout="column">
+                          <div layout="row" style="margin-top: 10px;">
+                              <md-chips ng-repeat="tag in room.tags">
+                                <md-chip>{{ tag }}</md-chip>
+                              </md-chips>
+                          </div>
+                        </div>
+                    </div>
+
                         <div flex-md="33" flex-order-md="2">
                             <div layout="column" flex layout-fill ng-cloak>
                                 <md-toolbar>
