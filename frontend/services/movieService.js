@@ -2,19 +2,16 @@ opentheater.service('MovieAPI', function ($http, $rootScope) {
 
     that = this
 
-    //TODO: maybe it would be better to store the api link in a config file
-    that.searchMovie = function (query) {
-        return $http.get("http://api.themoviedb.org/3/search/movie?api_key=" + tmdbKey + "&query=" + query).then(function (response) {
-            return angular.fromJson(response.data[0])
-        }, function (response) {
-            console.log("Error fetching tmdb data!")
-        })
+    this.api_url = "http://api.themoviedb.org/3"
+
+    this.api_backgrop_url = "http://image.tmdb.org/t/p/w780"
+
+    this.not_found = {
+        "backdrop_path" : "/627/200/3",
+        "base_url" : "http://lorempicsum.com/futurama"
     }
 
-    /*
-     Coming soon
-
-     that.findMovie = function(id){
-
-     }*/
+    this.searchMovie = (query,successCb,errorCb) => {
+        $http.get(that.api_url+"/search/movie?api_key=" + tmdbKey + "&query=" + query).then(successCb,errorCb)
+    }
 })

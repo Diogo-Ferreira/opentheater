@@ -38,7 +38,7 @@
         <!-- Rooms list -->
         <div ng-repeat="room in rooms | filter:{name: searchText, is_private:searchType} | limitTo:searchLimit">
             <md-card>
-                <img ng-src="http://lorempicsum.com/futurama/627/200/3" class="md-card-image" alt="Washed Out">
+                <img ng-src="{{room.movieData.base_url}}{{room.movieData.backdrop_path}}" class="md-card-image" alt="Washed Out">
                 <md-card-title>
                     <md-card-title-text>
                         <a ng-href="#/watch/{{room._id}}" class="card-link">

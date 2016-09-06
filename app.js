@@ -29,6 +29,7 @@ app.post('/create',function(req,res){
     "torrent_magnet_link" : req.body.torrent_magnet_link,
     "joignable_after_start" : req.body.joignable_after_start,
     "name"  : req.body.name,
+    "movie_name" : req.body.movie_name,
     "admin" : req.body.admin,
     "private" : req.body.private == 'true',
     "max_spectators" : req.body.max_spectators,
