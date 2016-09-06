@@ -1,57 +1,83 @@
-<div layout="column" layout-align="center center" layout-fill="layout-fill">
-    <div layout="column" class="loginBox md-whiteframe-z1" style="width:400px;" id="form">
-        <md-toolbar>
-            <h2 class="md-toolbar-tools">Création d'une salle</h2>
-        </md-toolbar>
-        <md-content layout="row" class="md-padding">
-            <form ng-submit="createRoomAlpha(this)" enctype="multipart/form-data">
-                <md-input-container>
-                    <label>Room name</label>
-                    <input ng-model="room.name">
-                </md-input-container>
-                <md-input-container>
-                    <label>Attached existing movie</label>
-                    <input ng-model="movie.name">
-                </md-input-container>
-                <md-input-container>
-                    <label>Description</label>
-                    <textarea ng-model="movie.description"></textarea>
-                </md-input-container>
-
-                <md-input-container>
-                  <label>Tags</label>
-                  <md-chips ng-model="tags" md-separator-keys="keys" placeholder="Enter a tag" secondary-placeholder="Space separed tags"></md-chips>
-                </md-input-container>
-
-                <md-input-container>
-                    <label>Nombre de personnes max</label>
-                    <input type="number" step="any" ng-model="room.nbmax" min="1"
-                           max="100" value="1"/>
-                </md-input-container>
-                <br/>
-                <md-input-container>
-                  <md-checkbox ng-model="room.private" aria-label="Checkbox 1">
-                      Privé ?
-                  </md-checkbox>
-                </md-input-container>
-                <br/>
-
-                <md-input-container>
-                    <label>File to stream</label>
-                    <input type="file" onchange="angular.element(this).scope().uploadFile(this)"/>
-                </md-input-container>
-
-                <br/>
-                <div layout="row" layout-align="center center" style="padding-top:20px;">
-                    <input type="submit" class="md-raised md-primary" value="Create the room">
-                </div>
-            </form>
-        </md-content>
+<div ng-if="!isAuthenticated">
+    <div flex-offset="20" flex="60" ng-controller="HomeCtrl">
+        <h1 class="home-title" style="color: black;">Please login</h1>
+        <p>
+            You must be logged in in order to access this part of the application.
+        </p>
+        <md-button class="md-raised md-primary btn blue" ng-click="authService.login()">
+            Connect and watch
+        </md-button>
+        <md-button class="md-raised md-primary btn white">
+            Learn more
+        </md-button>
+        <hr/>
     </div>
+</div>
 
-    <div layout="row" id="loading" layout-sm="column" layout-align="space-around" style="display:none;">
-        <md-progress-circular style="display: inline-block; margin-bottom: 20px;" md-mode="indeterminate"></md-progress-circular><br/>
-        <i style="font-size: 2em; width: 100%; text-align: center; color: #aaa">{{punchline}}</i>
+<div ng-if="isAuthenticated">
+
+
+
+
+    <div layout="column" layout-align="center center" layout-fill="layout-fill">
+        <div layout="column" class="loginBox md-whiteframe-z1" style="width:400px;" id="form">
+            <md-toolbar>
+                <h2 class="md-toolbar-tools">Création d'une salle</h2>
+            </md-toolbar>
+            <md-content layout="row" class="md-padding">
+                <form ng-submit="createRoomAlpha(this)" enctype="multipart/form-data">
+                    <md-input-container>
+                        <label>Room name</label>
+                        <input ng-model="room.name">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Attached existing movie</label>
+                        <input ng-model="movie.name">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Description</label>
+                        <textarea ng-model="movie.description"></textarea>
+                    </md-input-container>
+
+
+
+                    <md-input-container>
+                        <label>Tags</label>
+                        <md-chips ng-model="tags" md-separator-keys="keys" placeholder="Enter a tag" secondary-placeholder="Space separed tags"></md-chips>
+                    </md-input-container>
+
+                    <md-input-container>
+                        <label>Nombre de personnes max</label>
+                        <input type="number" step="any" ng-model="room.nbmax" min="1"
+                               max="100" value="1"/>
+                    </md-input-container>
+                    <br/>
+                    <md-input-container>
+                        <md-checkbox ng-model="room.private" aria-label="Checkbox 1">
+                            Privé ?
+                        </md-checkbox>
+                    </md-input-container>
+                    <br/>
+
+                    <md-input-container>
+                        <label>File to stream</label>
+                        <input type="file" onchange="angular.element(this).scope().uploadFile(this)"/>
+                    </md-input-container>
+
+                    <br/>
+                    <div layout="row" layout-align="center center" style="padding-top:20px;">
+                        <input type="submit" class="md-raised md-primary" value="Create the room">
+                    </div>
+                </form>
+            </md-content>
+        </div>
+
+        <div layout="row" id="loading" layout-sm="column" layout-align="space-around" style="display:none;">
+            <md-progress-circular style="display: inline-block; margin-bottom: 20px;"
+                                  md-mode="indeterminate"></md-progress-circular>
+            <br/>
+            <i style="font-size: 2em; width: 100%; text-align: center; color: #aaa">{{punchline}}</i>
+        </div>
+
     </div>
-
 </div>

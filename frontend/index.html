@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <title>OpenTheater</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,400,700,800, 900" rel="stylesheet">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
     <link rel="stylesheet" href="assets/custom.css">
 </head>
+
 <body ng-app="openTheater">
 
 <!-- Menu -->
-<md-content class="md-padding">
+<md-content>
     <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
         <md-nav-item md-nav-href="#/" name="page4">Home</md-nav-item>
         <md-nav-item md-nav-href="#/explore" name="page5">Explore</md-nav-item>
@@ -18,17 +20,25 @@
     </md-nav-bar>
 </md-content>
 
+
 <ng-view id="main-view"></ng-view>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-route.min.js"></script>
 <script src="https://code.angularjs.org/1.5.8/angular-animate.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.min.js"></script>
+
 <!-- Angular Material Library -->
 <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
 
+<!-- Latest patch release (recommended for production) -->
+
+<script type="text/javascript" src="https://cdn.auth0.com/js/lock/10.2/lock.min.js"></script>
+<script src="angular-lock/dist/angular-lock.js"></script>
+<script src="angular-jwt/dist/angular-jwt.js"></script>
 
 <script src="apikey.js"></script>
 <script src="openpeer.class.js"></script>
@@ -36,10 +46,12 @@
 <script src="app.js"></script>
 <script src="services/roomService.js"></script>
 <script src="services/movieService.js"></script>
+<script src="services/auth0Service.js"></script>
 <script src="controllers/homeCtrl.js"></script>
 <script src="controllers/createCtrl.js"></script>
 <script src="controllers/exploreCtrl.js"></script>
 <script src="controllers/watchCtrl.js"></script>
+<script src="controllers/loginCtrl.js"></script>
 <script src="utils.js"></script>
 
 </body>

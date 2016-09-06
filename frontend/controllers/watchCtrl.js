@@ -123,7 +123,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             }else if(data.cmd == "quickgoto"){
               document.getElementById("vid").currentTime = data.to
             }else if(data.cmd == "showreaction"){
-              $scope.peers.forEach(p => {
+              $scope.peers.forEach((p) => {
                 if(p.id === data.peer){
                   p.currentReaction = data.reaction
                   $scope.$apply()
