@@ -1,4 +1,36 @@
 
+.white{
+    background-color: #ecf0f1 !important;
+    color: #222 !important;
+}
+
+.blue{
+    background-color: #2980b9 !important;
+}
+
+.btn{
+    padding: 20px 40px 20px 40px;
+    font-weight: bold;
+
+    margin-left: 0px;
+}
+
+.lead{
+    font-family: 'Raleway';
+    font-size: 1.5em;
+}
+
+.home-title{
+    font-family: 'Raleway';
+    font-weight: 900;
+    font-size: 4em;
+    margin-bottom: 0px;
+}
+
+.home-lead{
+    font-weight: 300;
+}
+
 .card-link{
   text-decoration: none;
 }
@@ -112,7 +144,7 @@ body {
 }
 body {
     color: black;
-    text-align: center;
+    /*text-align: center;*/
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -132,6 +164,7 @@ body {
 .site-wrapper-inner {
     display: table-cell;
     vertical-align: middle;
+    background-color: rgba(0,0,0,.55);
 
 }
 .cover-container {
@@ -149,7 +182,7 @@ body {
  */
 
 .masthead {
-    margin-bottom: 2rem;
+    /*margin-bottom: 2rem;*/
 }
 
 .masthead-brand {
@@ -161,7 +194,7 @@ body {
     font-weight: bold;
     color: rgba(255,255,255,.5);
     background-color: transparent;
-    border-bottom: .25rem solid transparent;
+    /*border-bottom: .25rem solid transparent;*/
 }
 
 

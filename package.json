@@ -10,6 +10,9 @@
   "author": "INFINIT8",
   "license": "ISC",
   "dependencies": {
+    "angular-jwt": "^0.1.3",
+    "angular-lock": "^1.0.1",
+    "auth0-lock": "^10.2.2",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "mongodb": "^2.2.8"

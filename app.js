@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 data.init(url);
 
 app.use(express.static('./frontend'))
+app.use(express.static('./node_modules'))
 
 
 app.get('/explore',function(req,res){
@@ -22,7 +23,6 @@ app.get('/explore',function(req,res){
     res.json(rooms);
   });
 });
-
 
 app.post('/create',function(req,res){
   //Still need to add params validation
