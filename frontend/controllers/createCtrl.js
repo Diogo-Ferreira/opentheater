@@ -44,7 +44,7 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                         "joinable_after_start": true,
                         "name": elems.room.name,
                         "admin": $rootScope.adminInstance.peerid,
-                        "private": elems.room.private,
+                        "private": $scope.room.private == undefined ? "false" : "true",
                         "max_spectators": elems.room.nbmax,
                         "description": elems.movie.description,
                         "tags": $scope.tags
