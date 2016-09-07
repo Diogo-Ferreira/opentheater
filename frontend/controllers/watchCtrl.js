@@ -138,15 +138,21 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                     "time_info"   : $scope.getSyncTimeInfo(document.getElementById("vid").currentTime)
                 })
             }else if(data.info == "ready" && !started && $scope.isAdmin){
+              $scope.peers.push({
+                "id" : peer.peer,
+                "currentReaction" : {"id":0},
+                "name" : data.name
+              })
+              openpeer.clients[peer.id].name = data.name
               openpeer.sendTo(peer,{
                 "type" : "info",
                 "info" : "peers",
-                "peers": Object.keys(openpeer.clients).map(function(key){return {"id" : openpeer.clients[key].peer,"currentReaction" : {"id":0}}})
+                "peers": Object.keys(openpeer.clients).map(function(key){return {"id" : openpeer.clients[key].peer,"currentReaction" : {"id":0},"name" : openpeer.clients[key].name}})
               })
               openpeer.sendAll({
                 "type" : "info",
                 "info" : "newpeer",
-                "peer" : { "id" : peer.peer ,"currentReaction" : {"id":0}}
+                "peer" : { "id" : peer.peer ,"currentReaction" : {"id":0},"name" : data.name}
               },peer.peer)
             }else if(data.info == "newpeer" && !$scope.isAdmin){
               console.log("newpeerinforeceveid")
@@ -156,7 +162,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             }else if(data.info == "peers" && !$scope.isAdmin){
               console.log("peersreceveid")
               $scope.peers = data.peers.filter(e => e.id != openpeer.peer.id)
-              $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0}})
+              $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0},"name" : "admin"})
               $scope.$apply()
               console.log($scope.peers)
             }else if(data.info == "peerdisconnected" && !$scope.isAdmin){
@@ -217,10 +223,6 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             });
             openpeer.OnNewPeer = (conn) => {
                 console.log("New Peer Connected !")
-                $scope.peers.push({
-                  "id" : conn.peer,
-                  "currentReaction" : {"id":0}
-                })
                 $scope.$apply()
             }
             openpeer.OnConnClose = (conn) => {
@@ -260,7 +262,8 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                           console.log(elem)
                           openpeer.sendTo(openpeer.peerAdmin,{
                               "type" : "info",
-                              "info" : "ready"
+                              "info" : "ready",
+                              "name" : JSON.parse(localStorage.getItem("profile")).given_name
                           })
                           document.getElementById("vid").pause()
                       })
