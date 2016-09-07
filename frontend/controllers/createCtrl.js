@@ -43,12 +43,12 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                         "torrent_magnet_link": torrent.magnetURI,
                         "joinable_after_start": true,
                         "name": elems.room.name,
-                        "movie_name" : $scope.movie.name,
+                        "movie_name" : elems.movie.name,
                         "admin": $rootScope.adminInstance.peerid,
                         "private": elems.room.private == undefined ? "false" : "true",
                         "max_spectators": elems.room.nbmax,
                         "description": elems.movie.description,
-                        "tags": $scope.tags
+                        "tags": elems.tags
                     }
                 }).then(function (response) {
                     $rootScope.magnet = torrent.magnetURI
