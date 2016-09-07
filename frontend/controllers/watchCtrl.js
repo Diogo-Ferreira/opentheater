@@ -21,7 +21,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         "type" : "cmd",
         "cmd"  : "showreaction",
         "reaction" : reaction,
-        "peer" : openpeer.peerid
+        "peer" : openpeer.peer.id
       })
     }
 
@@ -131,7 +131,6 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
               })
             }
         }else if(data.type == "info"){
-            console.log("One peer's ready !")
             if(data.info == "ready" && started && $scope.isAdmin){
                 openpeer.sendTo(peer,{
                     "type" : "cmd",
@@ -156,7 +155,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
               console.log($scope.peers)
             }else if(data.info == "peers" && !$scope.isAdmin){
               console.log("peersreceveid")
-              $scope.peers = data.peers.filter(e => e.id != openpeer.peerid)
+              $scope.peers = data.peers.filter(e => e.id != openpeer.peer.id)
               $scope.peers.push({"id" : openpeer.adminId ,"currentReaction" : {"id":0}})
               $scope.$apply()
               console.log($scope.peers)
@@ -207,7 +206,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     //Are we the room admin ? If yes, we're also the WebRTC network HOST
     if($rootScope.isAdmin){
         openpeer = $rootScope.adminInstance
-        $scope.peerName = "I'm " + openpeer.peerid
+        $scope.peerName = "I'm " + openpeer.peer.id
         openpeer.OnMessage = $scope.OnMessage
         $rootScope.torrent.files.forEach((file) => {
             file.renderTo('#vid',{
@@ -219,7 +218,8 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             openpeer.OnNewPeer = (conn) => {
                 console.log("New Peer Connected !")
                 $scope.peers.push({
-                  "id" : conn.peer
+                  "id" : conn.peer,
+                  "currentReaction" : {"id":0}
                 })
                 $scope.$apply()
             }
@@ -245,7 +245,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     } else {
         $scope.loadRoom(function(roomData){
             openpeer = new OpenPeer(roomData.admin,() => {
-              $scope.peerName = "I'm " + openpeer.peerid
+              $scope.peerName = "I'm " + openpeer.peer.id
               $scope.room = roomData
               openpeer.OnMessage = $scope.OnMessage
               openpeer.listen(openpeer.peerAdmin)
@@ -256,8 +256,8 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                       file.renderTo('#vid',{
                           controls : false,
                       },function(err,elem){
-                          console.log(err);
-                          console.log(elem);
+                          console.log(err)
+                          console.log(elem)
                           openpeer.sendTo(openpeer.peerAdmin,{
                               "type" : "info",
                               "info" : "ready"
