@@ -1,4 +1,21 @@
 
+.file-upload{
+    border: 1px dashed #888 !important;
+    padding: 50px !important;
+    border-radius: 4px !important;
+    color: #777 !important;
+}
+
+
+.marged-form{
+    margin-top: 3em;
+}
+
+.marged-load{
+    margin-top: 20em;
+    display:none; text-align: center;
+}
+
 .white{
     background-color: #ecf0f1 !important;
     color: #222 !important;
