@@ -78,7 +78,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         var msg = {
             "type": "chat",
             "content": $scope.currentMessage,
-            "username": $scope.username
+            "username": JSON.parse(localStorage.getItem("profile")).given_name
         }
         $scope.messages.push(msg)
         openpeer.sendAll(msg)
@@ -104,7 +104,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 document.getElementById("vid").currentTime = data.time_info.startVidAt
                 $scope.torrent.critical(data.time_info.startPiece,data.time_info.endPiece)
                 //Check if current time is equal to the rendez-vous
-                var syncTimer = setInterval(function(playAt){
+                var syncTimer = setInterval((playAt) => {
                     //Rendez-vous reached, play the video !
                     if(parseInt(Date.now()) >= playAt){
                        document.getElementById("vid").play()
@@ -178,7 +178,8 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     $scope.getSyncTimeInfo = (currentVidTime) => {
       var msDelay = 60000.0
       //TODO : Split into more lines to clearify
-      var startPiece = parseFloat((document.getElementById("vid").currentTime+msDelay) *  $rootScope.torrent.files[0].length / document.getElementById("vid").duration) / $rootScope.torrent.pieceLength
+      var startPiece = parseFloat((document.getElementById("vid").currentTime+msDelay)
+       *  $rootScope.torrent.files[0].length / document.getElementById("vid").duration) / $rootScope.torrent.pieceLength
       return {
         "playAtTimeStamp" : Date.now() + msDelay, //Play the video, in 5 seconds
         "startVidAt" : currentVidTime + parseFloat(msDelay / 1000.0),
