@@ -137,7 +137,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                     "cmd"  : "goto",
                     "time_info"   : $scope.getSyncTimeInfo(document.getElementById("vid").currentTime)
                 })
-            }else if(data.info == "ready" && !started && $scope.isAdmin){
+            }
+            
+            if(data.info == "ready" && $scope.isAdmin){
               $scope.peers.push({
                 "id" : peer.peer,
                 "currentReaction" : {"id":0},
