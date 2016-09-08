@@ -1,5 +1,5 @@
 opentheater.controller('HomeCtrl', function ($scope, $rootScope, authService, authManager) {
-    $scope.bgGif = "url('../assets/img/gif/" + Math.floor(Math.random() * 47) + ".gif') no-repeat"
+    $rootScope.bgGif = "url('../assets/img/gif/" + Math.floor(Math.random() * 47) + ".gif') no-repeat"
 
     // Put the authService on $scope to access
     // the login method in the view
