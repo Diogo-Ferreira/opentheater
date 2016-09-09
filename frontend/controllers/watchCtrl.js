@@ -1,3 +1,6 @@
+/**
+* Controler qui gère le visonniage d'un film
+*/
 opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $routeParams, $rootScope){
 
     $scope.messages = []
@@ -9,12 +12,14 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
     var syncTimer
     $scope.peerName = "I'm "
 
+    //Génération des reactions
     for(var i = 1; i <= 5;i++){
       $scope.reactions.push({
         id : i
       })
     }
 
+    //Envoie une reaction, lors du click sur cette dernière
     $scope.onReactionClicked = (reaction) => {
       console.log(reaction)
       openpeer.sendAll({
@@ -25,9 +30,9 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
       })
     }
 
-    //For invalidateRoom, since were not sure that routeParams will be avaible on destroy
     var roomid = $routeParams.id
 
+    //Envoie une requête à l'API pour dire que la room n'est plus valide
     $scope.invalidateRoom = () => {
         $http({
             method : 'POST',
@@ -37,11 +42,12 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
             }
         })
     }
-
+    //Lorsque la page est détruite on invalide la room
     $scope.$on('$destroy', () => {
         if($rootScope.isAdmin) $scope.invalidateRoom()
     });
 
+    //Lorsque l'onglet est fermé on inavlide également la room
     angular.element($window)
         .on('beforeunload', (e) => {
             var msg = "\o/"
@@ -54,7 +60,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                 $scope.invalidateRoom()
         })
 
-
+    //Envoie la commande play
     $scope.onPlayBtnClicked = () => {
         openpeer.sendAll({
             "type" : "cmd",
@@ -65,6 +71,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         started = true
     }
 
+    //Envoie la commande pause
     $scope.onPauseBtnClicked = () =>  {
         openpeer.sendAll({
             "type": "cmd",
@@ -74,6 +81,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         $scope.showPlay = !$scope.showPlay
     }
 
+    //Envoie un message sur le chat
     $scope.sendChatMessage = () => {
         var msg = {
             "type": "chat",
@@ -84,7 +92,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
         openpeer.sendAll(msg)
     }
 
-    //PeerJS on message callback
+    //Fonction appèler à chaque message entrant de PeerJS
     //TODO : implement state pattern
     $scope.OnMessage = (data,peer) => {
         that = this
@@ -138,7 +146,7 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                     "time_info"   : $scope.getSyncTimeInfo(document.getElementById("vid").currentTime)
                 })
             }
-            
+
             if(data.info == "ready" && $scope.isAdmin){
               $scope.peers.push({
                 "id" : peer.peer,
@@ -263,6 +271,8 @@ opentheater.controller('WatchCtrl', function ($window,$scope, $http, Room, $rout
                       },function(err,elem){
                           console.log(err)
                           console.log(elem)
+
+                          //On est prêt à visionner, on signale donc l'admin
                           openpeer.sendTo(openpeer.peerAdmin,{
                               "type" : "info",
                               "info" : "ready",
