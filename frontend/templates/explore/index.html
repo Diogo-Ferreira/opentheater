@@ -1,61 +1,71 @@
-<br/>
+<div ng-if="!isAuthenticated">
+    <div flex-offset="20" flex="60" ng-controller="HomeCtrl">
+        <h1 class="home-title" style="color: black;">Please login</h1>
+        <p>
+            You must be logged in in order to access this part of the application.
+        </p>
+        <md-button class="md-raised md-primary btn blue" ng-click="authService.login()">
+            Connect and watch
+        </md-button>
+        <md-button class="md-raised md-primary btn white">
+            Learn more
+        </md-button>
+        <hr/>
+    </div>
+</div>
 
-<div layout-xs="column" flex-xs="100" flex-offset-xs="0" layout="row" flex-offset="20" flex="60">
+<div ng-if="isAuthenticated">
+    <br/>
 
-    <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4">
-        <md-toolbar class="md-theme-indigo">
-            <h1 class="md-toolbar-tools">Filter the rooms</h1>
-        </md-toolbar>
-        <md-content layout-padding>
-            <md-button ng-click="close()" class="md-primary" hide-gt-md>
-                Close Sidenav Left
-            </md-button>
-            <p hide show-gt-md>
+    <div layout-xs="column" flex-xs="100" flex-offset-xs="0" layout="row" flex-offset="20" flex="60">
 
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Recherche :</label>
-                    <input type="text" ng-model="searchText">
-                </md-input-container>
+        <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')"
+                    md-whiteframe="4">
+            <md-toolbar class="md-theme-indigo">
+                <h1 class="md-toolbar-tools">Filter the rooms</h1>
+            </md-toolbar>
+            <md-content layout-padding>
+                <md-button ng-click="close()" class="md-primary" hide-gt-md>
+                    Close Sidenav Left
+                </md-button>
+                <p hide show-gt-md>
 
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Type :</label>
-                    <md-select ng-model="searchType">
-                        <md-option value="">All</md-option>
-                        <md-option value="False">Public</md-option>
-                        <md-option value="True">Private</md-option>
-                    </md-select>
-                </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Recherche :</label>
+                        <input type="text" ng-model="searchText">
+                    </md-input-container>
 
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Limit results :</label>
-                    <input ng-model="searchLimit" type="number" value="10" step="1" min="1">
-                </md-input-container>
-            </p>
-        </md-content>
-    </md-sidenav>
 
-    <div flex="65" flex-xs="100" layout="column">
-        <!-- Rooms list -->
-        <div ng-repeat="room in rooms | filter:{name: searchText, is_private:searchType} | limitTo:searchLimit">
-            <md-card>
-                <img ng-src="http://lorempicsum.com/futurama/627/200/3" class="md-card-image" alt="Washed Out">
-                <md-card-title>
-                    <md-card-title-text>
-                        <a ng-href="#/watch/{{room._id}}" class="card-link">
-                            <span class="md-headline">{{room.name}}</span>
-                        </a>
-                        <span class="md-subhead">{{room.description}}</span>
-                        <md-chips>
-                            <md-chip>Bryan Muhmenthaler</md-chip>
-                            <md-chip>in 30 minutes</md-chip>
-                            <md-chip>{{room.is_private ? "Private" : "Public"}}</md-chip>
-                        </md-chips>
-                        <div layout="row" style="margin-top: 10px;">
-                            <span ng-repeat="tag in room.tags" class="tag-chip">{{tag.name}}</span>
-                        </div>
-                    </md-card-title-text>
-                </md-card-title>
-            </md-card>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Limit results :</label>
+                        <input ng-model="searchLimit" type="number" value="10" step="1" min="1">
+                    </md-input-container>
+                </p>
+            </md-content>
+        </md-sidenav>
+
+
+        <div flex="65" flex-xs="100" layout="column">
+            <!-- Rooms list -->
+            <div ng-repeat="room in rooms | filter:{name: searchText, is_private:searchType} | limitTo:searchLimit">
+                <md-card>
+                    <img ng-src="{{room.movieData.base_url}}{{room.movieData.backdrop_path}}" class="md-card-image" alt="Washed Out">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <a ng-href="#/watch/{{room._id}}" class="card-link">
+                                <span class="md-headline">{{room.name}}</span>
+                            </a>
+                            <span class="md-subhead">{{room.description}}</span>
+                            <div layout="row" style="margin-top: 10px;">
+                                <md-chips ng-repeat="tag in room.tags">
+                                    <md-chip>{{ tag }}</md-chip>
+                                </md-chips>
+                            </div>
+                        </md-card-title-text>
+                    </md-card-title>
+                </md-card>
+
+            </div>
         </div>
     </div>
 </div>

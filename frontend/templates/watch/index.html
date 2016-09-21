@@ -1,77 +1,104 @@
+<div ng-if="!isAuthenticated">
+    <div flex-offset="20" flex="60" ng-controller="HomeCtrl">
+        <h1 class="home-title" style="color: black;">Please login</h1>
+        <p>
+            You must be logged in in order to access this part of the application.
+        </p>
+        <md-button class="md-raised md-primary btn blue" ng-click="authService.login()">
+            Connect and watch
+        </md-button>
+        <md-button class="md-raised md-primary btn white">
+            Learn more
+        </md-button>
+        <hr/>
+    </div>
+</div>
 
-<div class="site-wrapper-inner">
-    <div >
-        <div class="inner cover black">
-          <h1 style="text-transform: uppercase;"><b>{{peerName}}</b></h1>
-            <h1 style="text-transform: uppercase;"><b>{{room.name}}</b></h1>
-            <br/>
-            <div flex="100">
-                <div layout="row" layout-md="column" layout-sm="column">
-                    <div flex-md="66" flex-order-md="1">
-                        <div id="reactions-container">
-                          <div class="reaction" ng-repeat="peer in peers" style="display:inline-block;">
+<!-- ng-if pose probleme -->
+<div>
+    <div class="site-wrapper-inner">
+        <div>
+            <div class="inner cover black">
+                <h1 style="text-transform: uppercase;"><b>{{peerName}}</b></h1>
+                <h1 style="text-transform: uppercase;"><b>{{room.name}}</b></h1>
+                <br/>
+                <div flex="100">
+                    <div layout="row" layout-md="column" layout-sm="column">
+                        <div flex-md="66" flex-order-md="1">
+                            <div id="reactions-container">
+                                <div class="reaction" ng-repeat="peer in peers" style="display:inline-block;">
                             <span class="reaction-img-container">
-                              <img class="reaction-img" src ="../assets/img/reactions/{{peer.currentReaction.id}}.png" width="50px"/>
+                              <img class="reaction-img" src="../assets/img/reactions/{{peer.currentReaction.id}}.png"
+                                   width="50px"/>
                             </span>
                             <span class="reaction-peer-name">
-                              {{peer.id}}
+                              {{peer.name}}
                             </span>
-                          </div>
-                        </div>
-                        <video id="vid" ng-model="video"  autobuffer style="width:100%;max-width:1280px;height:100%;max-height:720px;">
-                        </video>
+                                </div>
+                            </div>
+                            <video id="vid" ng-model="video" autobuffer
+                                   style="width:100%;max-width:1280px;height:100%;max-height:720px;">
+                            </video>
                         <span ng-if="isAdmin">
-                          <md-button ng-show="showPlay" ng-model="playBtn" ng-click="onPlayBtnClicked()">Play</md-button>
-                          <md-button ng-show="!showPlay" ng-model="pauseBtn" ng-click="onPauseBtnClicked()">Pause</md-button>
+                          <md-button ng-show="showPlay" ng-model="playBtn"
+                                     ng-click="onPlayBtnClicked()">Play</md-button>
+                          <md-button ng-show="!showPlay" ng-model="pauseBtn"
+                                     ng-click="onPauseBtnClicked()">Pause</md-button>
                         </span>
-                        <md-button ng-click="quickResync()">Quick resync</md-button>
-                        <div id="reaction-bar">
+                            <md-button ng-click="quickResync()">Quick resync</md-button>
+                            <div id="reaction-bar">
                           <span class="reaction-icon" ng-repeat="reaction in reactions">
-                            <img src="../assets/img/reactions/{{reaction.id}}.png" width="30px" ng-click="onReactionClicked(reaction)"/>
+                            <img src="../assets/img/reactions/{{reaction.id}}.png" width="30px"
+                                 ng-click="onReactionClicked(reaction)"/>
                           </span>
+
                         </div>
                         <div layout="column">
-                            <md-chips>
-                                <md-chip>Bryan Muhmenthaler</md-chip>
-                                <md-chip>in 30 minutes</md-chip>
-                                <md-chip>{{room.is_private ? "Private" : "Public"}}</md-chip>
-                            </md-chips>
-                            <div layout="row" style="margin-top: 10px;">
-                                <span ng-repeat="tag in room.tags" class="tag-chip">{{tag.name}}</span>
-                            </div>
+                          <div layout="row" style="margin-top: 10px;">
+                              <md-chips ng-repeat="tag in room.tags">
+                                <md-chip>{{ tag }}</md-chip>
+                              </md-chips>
+                          </div>
                         </div>
                     </div>
-                    <div flex-md="33" flex-order-md="2">
-                        <div layout="column" flex layout-fill ng-cloak>
-                        <md-toolbar>
-                            <div class="md-toolbar-tools">
-                                Chat <div style="width:100%;"><md-button class="md-warn" style="float:right;">Mode Nuit</md-button></div>
-                            </div>
-                        </md-toolbar>
-                        <md-content style="height: 576px;" md-theme="altTheme">
-                            <section>
-                                <md-list layout-padding>
-                                    <md-list-item class="md-3-line" ng-repeat="message in messages track by $index">
-                                        <div class="md-list-item-text">
-                                            <h3 align="left">{{message.username}}</h3>
-                                            <p>
-                                                {{message.content}}
-                                            </p>
+
+                        <div flex-md="33" flex-order-md="2">
+                            <div layout="column" flex layout-fill ng-cloak>
+                                <md-toolbar>
+                                    <div class="md-toolbar-tools">
+                                        Chat
+                                        <div style="width:100%;">
+                                            <md-button class="md-warn" style="float:right;">Mode Nuit</md-button>
                                         </div>
-                                    </md-list-item>
-                                </md-list>
-                            </section>
-                        </md-content>
-                        <div  class="md-inline-form">
-                        <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding style="background:#BBB;">
-                            <div>
-                                    <label>Message : </label><input ng-model="currentMessage" type="text">
-                                    <md-button  class="md-raised" ng-click="sendChatMessage()">Envoyer </md-button>
+                                    </div>
+                                </md-toolbar>
+                                <md-content style="height: 576px;" md-theme="altTheme">
+                                    <section>
+                                        <md-list layout-padding>
+                                            <md-list-item class="md-3-line"
+                                                          ng-repeat="message in messages track by $index">
+                                                <div class="md-list-item-text">
+                                                    <h3 align="left">{{message.username}}</h3>
+                                                    <p>
+                                                        {{message.content}}
+                                                    </p>
+                                                </div>
+                                            </md-list-item>
+                                        </md-list>
+                                    </section>
+                                </md-content>
+                                <div class="md-inline-form">
+                                    <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding
+                                                style="background:#BBB;">
+                                        <div>
+                                            <label>Message : </label><input ng-model="currentMessage" type="text">
+                                            <md-button class="md-raised" ng-click="sendChatMessage()">Envoyer
+                                            </md-button>
+                                        </div>
+                                    </md-content>
+                                </div>
                             </div>
-                        </md-content>
                         </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>

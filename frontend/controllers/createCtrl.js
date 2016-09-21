@@ -1,4 +1,7 @@
-opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $http) {
+opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $http,$mdConstant) {
+
+    $scope.keys = [$mdConstant.KEY_CODE.ENTER, $mdConstant.KEY_CODE.SPACE];
+    $scope.tags = [];
     // Create
     $rootScope.isAdmin = true
 
@@ -40,10 +43,12 @@ opentheater.controller('CreateCtrl', function ($window, $rootScope, $scope, $htt
                         "torrent_magnet_link": torrent.magnetURI,
                         "joinable_after_start": true,
                         "name": elems.room.name,
+                        "movie_name" : elems.movie.name,
                         "admin": $rootScope.adminInstance.peerid,
-                        "private": false,
+                        "private": elems.room.private == undefined ? "false" : "true",
                         "max_spectators": elems.room.nbmax,
-                        "description": elems.movie.description
+                        "description": elems.movie.description,
+                        "tags": elems.tags
                     }
                 }).then(function (response) {
                     $rootScope.magnet = torrent.magnetURI
